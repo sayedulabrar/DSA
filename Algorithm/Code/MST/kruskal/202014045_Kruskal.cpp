@@ -2,14 +2,16 @@
 using namespace std;
 int parent[100];
 
+struct check{
+    int x,y,id;
+    check(int a,int b,int c){
+        x=a;
+        y=b;
+        id=c;
+    }
+}
 
 
-
-struct par{
-    int x,y;
-    par(){}
-        par(int vv,int cc){x=vv; y=cc;}
-    };
 
     struct node{
     int x,y;
@@ -30,9 +32,8 @@ int find(int x)
 {
     if (x==parent[x]) return x;
 
-    int r=find(parent[x]);
-    parent[x]=r;
-    return r;
+    parent[x]=find(parent[x]);
+    return parent[x];
 }
 
 void makeset(int i)
@@ -68,12 +69,12 @@ int n,v,a,b;
 
 
 cin>>n;
-par am[n];
-for(int i=0;i<n;i++)
+check am[n];
+for(int i=0;i<n;i++)   //a,b is a point in xy axis.So a single makeset for it  with unique id i  i
 {
     cin>>a>>b;
-    par z(a,b);
-    makeset(a);
+    check z(a,b,i);
+    makeset(i);
     am[i]=z;
 
 }
@@ -81,14 +82,14 @@ for(int i=0;i<n;i++)
 for(int i=0;i<n;i++)
 {
 
-    par zz=am[i];
+    check zz=am[i];
     for(int j=0;j<n;j++)
     {
-        par za=am[j];
+        check za=am[j];
 
         if(j!=i)
         {
-           node d(zz.x,za.x,abs(zz.x-za.x)+abs(zz.y-za.y));
+           node d(zz.id,za.id,abs(zz.x-za.x)+abs(zz.y-za.y));
            s.push_back(d);
 
         }
@@ -101,14 +102,12 @@ int bill=0;
 for (auto ir = s.begin(); ir != s.end(); ++ir)
 {
     node f=*ir;
-    if(find(f.x)!=find(f.y))
-    {
-        Union(f.x,f.y);
+    if(Union(f.x,f.y)){
         bill=bill+f.cost;
     }
-}
 
 cout<<bill<<endl;
 
 
+}
 }

@@ -4,7 +4,7 @@
 using namespace std;
 
 int xx[105], yy[105];
-int visited[105], key[105];
+int visited[105];
 int n;
 
 int abs(int x, int y){
@@ -18,10 +18,8 @@ int mstCost(int r){
     int total = 0;
     for(int i=0; i<n; i++){
         pq.insert(i,INF);
-        key[i] = INF;
     }
-    pq.decreaseKey(r, 0);
-    key[r] = 0;
+    pq.decreaseKey(r, 0);  // r is id of root node
 
     while(pq.size()!=0){
         Node uN = pq.extractMin();
@@ -29,12 +27,12 @@ int mstCost(int r){
         total+=uN.key;
         visited[u] = 1;
 
-        for(int v=0; v<n; v++){
+        for(int v=0; v<n; v++){ // it's because we are finding the most efficient path to connect the points in xy axis.
             if(v==u)    continue;
             int w = abs(xx[u]-xx[v])+abs(yy[u]-yy[v]);
-            if(visited[v]==0 && key[v] > w){
-                key[v]=w;
+            if(visited[v]==0 && pq.getvalue(v) > w){
                 pq.decreaseKey(v, w);
+                // key for easy access to weight of id.We can get it from pq but time consuming.
             }
         }
     }

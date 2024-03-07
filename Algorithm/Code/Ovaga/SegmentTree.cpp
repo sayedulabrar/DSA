@@ -80,7 +80,7 @@ void update(int node, int b, int e, int i, int newvalue)
 int getMid(int s, int e) { return s + (e - s) / 2; }
 
 int l= 1e9;
-int findMinimumIndex(int ss, int se, int K, int si)
+int findMinimumIndex(int ss, int se, int K, int si) //Index of minimum value that is >= value at k
 {
 
     if (treeMax[si] < K)

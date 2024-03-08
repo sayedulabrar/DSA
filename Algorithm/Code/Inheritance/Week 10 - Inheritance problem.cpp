@@ -1,6 +1,15 @@
 #include<iostream>
 using namespace std;
 
+
+// private can't be accessed by child class.But Protected can be accessed by child class . Public can be access from anywhere as long as the class name is available .
+// Protected can't be accessed  from main function or anything outside class .So we use  display function to solve this issue.
+// virtual is used for those function that will be used or extended or overwritten  later in child class.
+//Private variable can only be accessed by the class itself.But for child classes we need to use getter.
+
+
+//If a class has a virtual function then it's a ABSTRACT CLASS. 
+
 class Person
 {
 private:
@@ -67,7 +76,8 @@ public:
 
 void printSal(Person * p)
 {
-    cout<<"Salary of "<<p->full_name<<", ID: "<<p->ID<<" is: "<<p->getSal()<<endl;
+    cout<<"Salary of "<<p->full_name<<", ID: "<<p->ID<<" is: "<<p->getSal()<<endl;  // what will this getsal return when it's called ?
+    // As it's from it's extended class so that class's getsal will be used which is operator's.
 }
 
 class Machine
@@ -134,7 +144,7 @@ public:
 
     void operated_by()
     {
-        cout<<"Machine ID: "<<getMachineID()<<" is operated by: "<< full_name<<", having ID: "<<Person::ID <<endl;
+        cout<<"Machine ID: "<<getMachineID()<<" is operated by: "<< full_name<<", having ID: "<<Person::ID <<endl;// here 2 ID was present from 2 parent class.So Person::ID was used.
     }
 };
 
@@ -150,7 +160,7 @@ int main()
     Operator Op1("Mahdi", 202014028, "Production Engineer", 0177005544, 35000, 15000, 500, 10);
 
     Person * ptr;
-    ptr=&Op1;
+    ptr=&Op1;  //obj slicing, late binding , Abstract class
 
     cout<<"A operator object created and printSal() called for operator\n(obj slicing, late binding and abstract class)\n"<<endl;
     printSal(ptr);

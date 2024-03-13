@@ -27,13 +27,9 @@ bool isleaf(Node *as)
 }
 
 
-void createEdge(Node *u, Node *v, char c){
-    int ki;
-    if(c=='@') ki=26;
-    else if(c=='.') ki=27;
-    else  ki = (int)c - 65;
+void createEdge(Node *u, Node *v, int c){
 
-    u->children[ki]=v;
+    u->children[c]=v;
 }
 void deledge(Node *u,char c,int d)
 {
@@ -72,35 +68,53 @@ void insert(string s){
         else if(c=='.') ki=27;
         else  ki = (int)c - 65;
         Node *v = createNode();
-        if(u->children[ki]==NULL)    createEdge(u, v, c);
+        if(u->children[ki]==NULL)    createEdge(u, v, ki);
         u = u->children[ki];
     }
  u->count++;
 
 }
+
+
 /*ONLY for 26 alphadet.@ and . is not handled here*/
-int Delete(Node *p,int d,string key)
+int Delete(Node *p, int d, string key)
 {
-    if(p->children[key[d]-'A']==NULL && d<key.length())
-    {
-        return 0;
+    if (d == key.length()) {
+        // Handle the base case when we reach the end of the key
+        if (p->count < 1) return 0; // Word not present as no count
+        
+        // Word is present and count >= 1
+        if (isleaf(p) == false) {
+            p->count--; // Junction node, decrement count
+            return 0; // Don't delete the junction node
+        }
+        
+        if (p->count > 1) {
+            p->count--; // Multiple instances of the same word, decrement count
+            return 0; // Don't delete the node as there are still other instances
+        }
+        
+        // Single instance of the word and it's a leaf node
+        return 1; // Delete the leaf node
     }
-    if(p->children[key[d]-'A']!=NULL && d==key.length()-1)
-    {
-     return 1;
-    }
-    int a=Delete(p->children[key[d]-'A'],d+1,key);
-    if(a==1)
-    {
-     deledge(p,key[d],a);
-     if(isjun(p)) return 0;
-     else return 1;
 
+    if (p == NULL) {
+        return 0; // Key not found in the Trie
     }
 
+    int a = Delete(p->children[key[d] - 'A'], d + 1, key);
+    if (a == 1) {
+        deledge(p, key[d], a);
+        if (isjun(p)) return 0; // Don't delete junction nodes
+        else return 1; // Delete the node
+    }
 
-
+    return 0; // Key not found in the Trie
 }
+
+
+
+
 Node *search( Node *root, string key)
 {
     Node *pCrawl = root;
@@ -121,7 +135,10 @@ Node *search( Node *root, string key)
 }
 
 void printLexicographic(Node *cur, string s,string g=""){
-    for(int i=0; i<cur->count; i++)   cout<<s<<g<<endl;
+    if (cur->count>0){
+     for(int i=0; i<cur->count; i++)   cout<<s<<g<<endl;
+    }
+    
     for(int i=0; i<28; i++){
         char cc;
         if(i<26)
@@ -133,9 +150,9 @@ void printLexicographic(Node *cur, string s,string g=""){
 
 
         if(cur->children[i]!=NULL)
-        {
+        {   cur=cur->children[i];
 
-            printLexicographic(cur->children[i], s+cc,g);
+            printLexicographic(cur, s+cc,g);
             // s.pop_back();
             //return;
         }

@@ -44,7 +44,7 @@ void deledge(Node *u,char c,int d)
     free(v);
 }
 
-bool isjun(Node *u)
+bool isjun(Node *u) // 1.count>0 2. must have at least 1 children 
 {
     if(u->count>0) return true;
     if(isleaf(u)) return false;

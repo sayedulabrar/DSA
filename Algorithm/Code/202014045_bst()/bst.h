@@ -114,7 +114,7 @@ public:
     }
 
 private:
-    Node* findSuccessor(Node *node){
+    Node* findSuccessor(Node *node){// all about right
         Node *x,*y;
         if(node->right!=NULL)
         {
@@ -133,146 +133,78 @@ private:
 
     }
 
-    void delete0Child(Node *node){
-        if(node->parent==NULL)
-        {
-            free(node);
-            root=NULL;
-            return;
-        }
-        if(node->key<node->parent->key)
-        {
-            node->parent->left=NULL;
-        }else if(node->key>node->parent->key)
-        {
-            node->parent->right=NULL;
-        }
-        free(node);
-
-
-
-
-    }
-
-    void delete1Child(Node *node){
-
-        Node *dadu,*nati;
-
-      dadu=node->parent;
-      nati=node->left;
-      if(nati==NULL){
-
-        nati=node->right;
-      }
-      if(node==root)
-        {
-            root=nati;
-            root->parent=NULL;
-            free(node);
-            return;
-        }
-      if(nati->key<dadu->key)
-      {
-          dadu->left=nati;
-      }else
-      {
-          dadu->right=nati;
-      }
-      nati->parent=dadu;
-      free(node);
-
-    }
-
-    void delete2Child(Node *node){
-        Node *n,*m;
-        n=findSuccessor(node->right);
-        m=n->parent;
-        node->key=n->key;
-        if(n->left==NULL && n->right==NULL)
-        {
-           if(n->key<m->key)
-        {
-            m->left=NULL;
-        }else
-        {
-            m->right=NULL;
-        }
-        }
-        else
-        {
-         if(n->left==NULL || n->right==NULL)
-            {
-                delete1Child(n);
-            }else{
-            delete2Child(n);
-            }
-        }
-
-        free(n);
-
-
-
-    }
 
 public:
-    bool deleteNode(int val){
-        Node *tmp=findNode(val);
-        if(tmp==NULL)
-        {
-            return false;
-        }else
-        {
-            if(tmp->left==NULL && tmp->right==NULL)
-            {
-                delete0Child(tmp);
-            }else if(tmp->left==NULL || tmp->right==NULL)
-            {
-                delete1Child(tmp);
-            }else{
-            delete2Child(tmp);
-            }
-            return true;
+
+
+Node* deleteNode(Node* root, int key) {
+    // Base case: If the tree is empty or key not found
+    if (root == NULL) 
+        return root;
+
+    if (key < root->key)
+        root->left = deleteNode(root->left, key);
+    else if (key > root->key)
+        root->right = deleteNode(root->right, key);
+    else {
+        // Node with only one child or no child
+        if (root->left == NULL) {
+            Node* temp = root->right;
+            if (temp)
+                temp->parent = root->parent; // Update the parent pointer of the child
+            free(root);
+            return temp;
+        }
+        else if (root->right == NULL) {
+            Node* temp = root->left;
+            if (temp)
+                temp->parent = root->parent; // Update the parent pointer of the child
+            free(root);
+            return temp;
         }
 
+        Node* temp = minValueNode(root->right);   
+        root->key = temp->key;
+        root->right = deleteNode(temp, temp->key);
     }
-
+    return root;
+}
+ 
     int height(Node *node){
         if(node==NULL)
         {
             return -1;
         }else
         {
-            int lh,rh;
-            lh=height(node->left);
-            rh=height(node->right);
-            return max(lh,rh) + 1;
+            return max(height(node->left),height(node->right)) + 1;
         }
     }
 
 
-    void bfs(){
-        queue<Node*> q;
-        root->level = 0;
-        int level = root->level;
-        q.push(root);
+void bfs(){
+    queue<Node*> q;
+    root->level = 0;
+    int level = root->level;
+    q.push(root);
 
-        while(!q.empty()){
-            Node *temp = q.front();
-            q.pop();
-            if(temp->level > level){
-                cout<<endl;
-                level++;
-            }
-            cout<<temp->key<<" ";
-            if(temp->left!=NULL){
-                if(temp->left!=root)  temp->left->level = temp->level + 1;
-                q.push(temp->left);
-            }
-            if(temp->right!=NULL){
-                if(temp->right!=root)  temp->right->level = temp->level + 1;
-                q.push(temp->right);
-            }
+    while(!q.empty()){
+        Node *temp = q.front();
+        q.pop();
+        if(temp->level > level){
+            cout<<endl;
+            level++;
+        }
+        cout<<temp->key<<" ";
+        if(temp->left != NULL) {
+            temp->left->level = temp->level + 1;
+            q.push(temp->left);
+        }
+        if(temp->right != NULL) {
+            temp->right->level = temp->level + 1;
+            q.push(temp->right);
         }
     }
+}
+
 };
 

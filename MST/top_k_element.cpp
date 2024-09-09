@@ -7,40 +7,40 @@ a.second < b.second : it ensures smallest frequency higher priority and pop at l
 
 class Solution {
 public:
-vector<int> topKFrequent(vector<int>& nums, int k) {
-    // Step 1: Build frequency map
-    unordered_map<int, int> freqMap;
-    for (int num : nums) {
-        freqMap[num]++;
-    }
-
-    // Step 2: Insert elements into min-heap (priority queue) of size k
-   bool compare(const pair<int, int>& a, const pair<int, int>& b) {
-    return a.second > b.second;
-    }
-
-    priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(&compare)> minHeap(compare);
-
-    for (auto entry : freqMap) {
-        minHeap.push(entry);
-        if (minHeap.size() > k) {
-            minHeap.pop(); // Maintain min-heap size k
+    // Custom comparator for the min-heap
+    struct compare {
+        bool operator()(const pair<int, int>& a, const pair<int, int>& b) {
+            return a.second > b.second; // Compare frequencies
         }
-    }
+    };
 
-    // Step 3: Extract top k elements from min-heap
-    vector<int> result;
-    while (!minHeap.empty()) {
-        result.push_back(minHeap.top().first);
-        minHeap.pop();
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        // Step 1: Build frequency map
+        unordered_map<int, int> freqMap;
+        for (int num : nums) {
+            freqMap[num]++;
+        }
+
+        // Step 2: Insert elements into min-heap (priority queue) of size k
+        priority_queue<pair<int, int>, vector<pair<int, int>>, compare> minHeap;
+
+        for (auto entry : freqMap) {
+            minHeap.push(entry);
+            if (minHeap.size() > k) {
+                minHeap.pop(); // Maintain min-heap size of k
+            }
+        }
+
+        // Step 3: Extract top k elements from min-heap
+        vector<int> result;
+        while (!minHeap.empty()) {
+            result.push_back(minHeap.top().first);
+            minHeap.pop();
+        }
+        // The heap already maintains the top k elements in the correct order, so no need to reverse
+        return result;
     }
-    // Reverse the result because it's stored in ascending order in the min-heap
-    reverse(result.begin(), result.end());
-    return result;
-}
 };
-
-
 
 
 
@@ -75,29 +75,40 @@ Constraints:
 nums1 and nums2 both are sorted in non-decreasing order.
 1 <= k <= 104
 k <= nums1.length * nums2.length
+
+
+
 class Solution {
 public:
     vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
-        vector<vector<int>> result;
-        if (nums1.empty() || nums2.empty() || k <= 0) return result;
+        // Max-heap to store the pairs with their sums, we want to keep the k smallest
+        priority_queue<pair<int, pair<int, int>>> maxHeap;
 
-        auto cmp = [&nums1, &nums2](pair<int, int>& a, pair<int, int>& b) {
-            return nums1[a.first] + nums2[a.second] > nums1[b.first] + nums2[b.second];
-        };
-        priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp)> pq(cmp);
-
-        for (int i = 0; i < min(k, static_cast<int>(nums1.size())); ++i) {
-            pq.push({i, 0});
-        }
-
-        while (k-- > 0 && !pq.empty()) {
-            auto [i, j] = pq.top();
-            pq.pop();
-            result.push_back({nums1[i], nums2[j]});
-            if (j + 1 < nums2.size()) {
-                pq.push({i, j + 1});
+        // Iterate over all combinations of nums1 and nums2
+        for (int i = 0; i < nums1.size(); i++) {
+            for (int j = 0; j < nums2.size(); j++) {
+                int sum = nums1[i] + nums2[j];
+                
+                // Push the current pair (sum, {i, j}) into the heap
+                maxHeap.push({sum, {i, j}});
+                
+                // If the heap size exceeds k, pop the largest sum pair
+                if (maxHeap.size() > k) {
+                    maxHeap.pop();
+                }
             }
         }
+
+        // Collect the result from the heap
+        vector<vector<int>> result;
+        while (!maxHeap.empty()) {
+            auto [sum, indices] = maxHeap.top();
+            maxHeap.pop();
+            result.push_back({nums1[indices.first], nums2[indices.second]});
+        }
+
+        // Since the max-heap stores elements in reverse order, we reverse the result
+        reverse(result.begin(), result.end());
 
         return result;
     }

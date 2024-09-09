@@ -16,7 +16,7 @@ bool canConstruct(string ransomNote, string magazine) {
     // Check if ransomNote can be constructed from magazine
     for (char c : ransomNote) {
         // If character not present or frequency less in magazine, return false
-        if (magFreq.find(c) != magFreq.end() && magFreq[c]>0){ 
+        if (magFreq[c]>0){ 
             magFreq[c]--;
             }
         else return false;
@@ -35,7 +35,6 @@ bool isAnagram(string s, string t) {
     
     // Hashmap to store character frequencies in string s
     unordered_map<char, int> freq;
-    int count = s.size();
 
     // Populate freq with character frequencies from string s
     for (char c : s)
@@ -44,16 +43,15 @@ bool isAnagram(string s, string t) {
     // Iterate through each character in string t
     for (char c : t) {
         // If character exists in s and its frequency is greater than 0, decrement the count
-        if (freq.find(c) != freq.end() && freq[c] > 0) {
+        if (freq[c] > 0) {
             freq[c]--;
-            count--;// no need as both have same size and there can't be a char that is there after covering all char of t.
         } else {
             return false;
         }
     }
 
     // If all characters in s are accounted for in t, they are anagrams
-    return count == 0;
+    return true;
 }
 
 
@@ -63,26 +61,23 @@ All occurrences of a character must be replaced with another character while pre
 same character, but a character may map to itself.
 IT IS LIKE ONE TO ONE MAPPING.****
 bool isIsomorphic(string s, string t) {
-    unordered_map<char, char> sToT;
-    unordered_map<char, char> tToS;
+    unordered_map<char, char> sToT, tToS;
 
     for (int i = 0; i < s.size(); ++i) {
-        char sChar = s[i];
-        char tChar = t[i];
+        char sChar = s[i], tChar = t[i];
 
-        if (sToT.find(sChar) == sToT.end() && tToS.find(tChar) == tToS.end()) {
-            sToT[sChar] = tChar;
-            tToS[tChar] = sChar;
-        } else if (sToT.find(sChar) != sToT.end() && sToT[sChar] == tChar &&
-                   tToS.find(tChar) != tToS.end() && tToS[tChar] == sChar) {
-            continue;
-        } else {
+        if ((sToT.count(sChar) && sToT[sChar] != tChar) || 
+            (tToS.count(tChar) && tToS[tChar] != sChar)) {
             return false;
         }
+
+        sToT[sChar] = tChar;
+        tToS[tChar] = sChar;
     }
 
     return true;
 }
+
 
 Example 1:
 
@@ -113,16 +108,15 @@ bool wordPattern(string pattern, string s) {
     for (int i = 0; i < pattern.size(); ++i) {
         char patternChar = pattern[i];
         string currentWord = words[i];
-        
-        if (patternToWord.find(patternChar) == patternToWord.end() && wordToPattern.find(currentWord) == wordToPattern.end()) {
-            patternToWord[patternChar] = currentWord;
-            wordToPattern[currentWord] = patternChar;
-        } else if (patternToWord.find(patternChar) != patternToWord.end() && patternToWord[patternChar] == currentWord &&
-                   wordToPattern.find(currentWord) != wordToPattern.end() && wordToPattern[currentWord] == patternChar) {
-            continue;
-        } else {
-            return false;
-        }
+
+
+        if(patternToWord.find(patternChar) != patternToWord.end() && patternToWord[patternChar] != currentWord ||
+                   wordToPattern.find(currentWord) != wordToPattern.end() && wordToPattern[currentWord] != patternChar)
+                   {
+                    return false;
+                   }
+        patternToWord[patternChar] = currentWord;
+        wordToPattern[currentWord] = patternChar;
     }
     
     return true;

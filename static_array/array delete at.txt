@@ -1,0 +1,69 @@
+#include<stdio.h>
+#define maxLength 4
+
+int length=0;
+int list[maxLength];//main list
+
+/**
+Delete the element at a given position pos from the list
+Here 0<=pos<length
+Generate error message if the list is empty or pos is out of bound
+**/
+int deleteAt(int pos){
+    int i;
+    if(length==0)
+        return -1;
+    if(pos>=length || pos<0)
+        return -2;
+    for(i=pos;i<=length-2;i++)
+    {
+        list[i]=list[i+1];
+    }
+    length--;
+    return length;
+
+}
+
+void print()
+{
+	int i;
+	for(i=0;i<maxLength;i++){
+		printf("%d ",list[i]);
+	}
+	printf("\n");
+}
+
+int main()
+{
+	int element, pos, res, ch, i;
+	for(i=0;i<maxLength;i++)
+    {
+        printf("Do you want to insert element? 1/0\n");
+        scanf("%d",&ch);
+        if(ch==0)
+            break;
+        else
+        {
+            scanf("%d", &list[i]);
+            print();
+            length++;
+        }
+    }
+
+        printf("Enter position: ");
+        scanf("%d",&pos);
+        res=deleteAt(pos);
+        if(res==-1)
+            printf("List Empty\n");
+        else if(res==-2)
+            printf("Incorrect pos value\n");
+        else
+            printf("Deleted from position %d\n",res);
+
+ 	for(i=0;i<length;i++){
+		printf("%d ",list[i]);
+	}
+	printf("\n");
+
+    return 0;
+}

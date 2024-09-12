@@ -99,38 +99,65 @@ int rec(int i, int j) {
 
 
 5. Longest Palindromic Substring
-
 class Solution {
 public:
-    int maxLen = 1;
-    int startInd = 0;
-    int dp[1001][1001];
-    bool f(int l, int r, string &s){
-        if(l >= r) return true; 
-    
-        if(dp[l][r] != -1) return dp[l][r];
-
-        if(s[l] == s[r] && f(l+1, r-1, s) == true){
-            if(r-l+1 > maxLen){
-                maxLen = r-l+1;
-                startInd = l;
-            }
-            return dp[l][r] = true;
-        }
-        f(l+1, r, s);
-        f(l,r-1,s);
-
-        return dp[l][r] = false;
-    }
-
+    int maxLen = 1;  // Track the maximum length of a palindrome
+    int dp[1001][1001];  // Memoization table to store the length of palindromic substrings
+    int startindex = 0;  // Properly initialize startindex to 0
 
     string longestPalindrome(string s) {
-        memset(dp, -1, sizeof(dp));
-        f(0, s.size()-1, s);
-        return s.substr(startInd, maxLen);
+        memset(dp, -1, sizeof(dp));  // Initialize dp table with -1
+        f(0, s.size() - 1, s);  // Call the recursive function
+        return s.substr(startindex, maxLen);
     }
-};
 
+    // Helper function to check if a substring s[l..r] is a palindrome
+    bool isPalindrome(int l, int r, string &s) {
+        while (l < r) {
+            if (s[l] != s[r]) return false;
+            l++;
+            r--;
+        }
+        return true;
+    }
+
+    // Recursive function to find the length of the longest palindromic substring for s[l..r]
+    int f(int l, int r, string &s) {
+        if (l > r) return 0;  // Invalid range
+        if (l == r) return 1;  // A single character is always a palindrome of length 1
+
+        if (dp[l][r] != -1) return dp[l][r];  // Return memoized result
+
+        // Check if s[l..r] is a palindrome
+        if (isPalindrome(l, r, s)) {
+            dp[l][r] = r - l + 1;  // This substring is a palindrome
+            if (dp[l][r] > maxLen) {
+                maxLen = dp[l][r];
+                startindex = l;  // Update startindex only if we find a longer palindrome
+            }
+        } else {
+            dp[l][r] = max(f(l + 1, r, s), f(l, r - 1, s));  // Try excluding characters
+        }
+
+
+        // For destroying palindromic substring and total cost to destroy the string minimum (rest part same)
+        //         // Check if s[l..r] is a palindrome
+        // if (isPalindrome(l, r, s)) {
+        //     dp[l][r] =1;  // This substring is a palindrome
+            
+        // } else {
+        //      dp[l][r]=999999999;
+        //     for(int k=l;k<r;k++){
+        //        dp[l][r] = min(dp[l][r],f(l, k, s)+ f(k+1, r, s));  // Try excluding characters
+        //     }
+            
+        // }
+
+        return dp[l][r];  // Return the length of the longest palindrome for s[l..r]
+    }
+
+
+};
 
 
 

@@ -10,7 +10,7 @@ struct ar {
 
 struct Compare {
     bool operator()(const ar& a, const ar& b) {
-        return a.value > b.value; // Min heap
+        return a.value < b.value; // Min heap
     }
 };
 

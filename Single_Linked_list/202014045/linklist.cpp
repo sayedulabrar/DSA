@@ -437,6 +437,24 @@ public:
 
 
 
+reverse linklist
+Node* reverseLinkedList(Node* head) {
+    Node* prev = nullptr;
+    Node* current = head;
+    Node* next = nullptr;
+
+    while (current != nullptr) {
+        next = current->next;   
+
+        current->next = prev;
+        prev = current;
+        current = next;   
+
+    }
+
+    return prev;
+}
+
 reverse linklist from left to right 
 class Solution {
 public:
@@ -606,3 +624,59 @@ public:
         cache[key] = value;
     }
 };
+
+
+
+
+
+
+
+
+
+class LRUCache {
+public:
+    int capacity;
+    unordered_map<int, pair<int, list<int>::iterator>> cache;
+    list<int> recentlyUsed;
+
+    void updateRecentlyUsed(int key) {
+        recentlyUsed.erase(cache[key].second);
+        recentlyUsed.push_front(key);
+        cache[key].second = recentlyUsed.begin();
+    }
+
+public:
+    LRUCache(int capacity) : capacity(capacity) {}
+
+    int get(int key) {
+        if (cache.find(key) == cache.end()) {
+            return -1;
+        }
+
+        updateRecentlyUsed(key);
+        return cache[key].first;
+    }
+
+    void put(int key, int value) {
+        if (cache.find(key) != cache.end()) {
+            updateRecentlyUsed(key);
+            cache[key].first = value;
+            return;
+        }
+
+        if (cache.size() == capacity) {
+            int LRUKey = recentlyUsed.back();
+            recentlyUsed.pop_back();
+            cache.erase(LRUKey);
+        }
+
+        recentlyUsed.push_front(key);
+        cache[key] = {value, recentlyUsed.begin()};
+    }
+};
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */

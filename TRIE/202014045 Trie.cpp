@@ -1,244 +1,179 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <string>
 using namespace std;
 
-struct Node{
+class Node {
+public:
     int count;
-    Node *children[28];
-};
+    Node* children[28];
 
-Node *root;
+    Node() {
+        for (int i = 0; i < 28; ++i) {
+            children[i] = nullptr;
+        }
+        count = 0;
+    }
+} *root;
 
-Node *createNode(){
-    Node *n = (Node*)malloc(sizeof(Node));
-    n->count = 0;
-    for(int i=0; i<28; i++) n->children[i]=NULL;
-    return n;
-}
-
-
-bool nochildren(Node *as)
-{
-    for(int i=0;i<28;i++)
-    {
-        if(as->children[i])
-        {
+bool nochildren(Node* as) {
+    for (int i = 0; i < 28; i++) {
+        if (as->children[i]) {
             return false;
         }
     }
     return true;
 }
 
-
-void createEdge(Node *u, Node *v, int c){
-
-    u->children[c]=v;
+void createEdge(Node* u, Node* v, int c) {
+    u->children[c] = v;
 }
 
-
-void deledge(Node *u,char c,int d)
-{
+void deledge(Node* u, char c, int d) {
     int rp;
-    if(d==0) return;
-    if(c=='@') rp=26;
-    else if(c=='.') rp=27;
-    else  rp = (int)c - 65;
+    if (d == 0) return;
+    if (c == '@') rp = 26;
+    else if (c == '.') rp = 27;
+    else rp = (int)c - 65;
 
-    Node *v=u->children[rp];
-    u->children[rp]=NULL;
-    free(v);
+    Node* v = u->children[rp];
+    u->children[rp] = nullptr;
+    delete v; // Correctly use delete instead of free()
 }
 
-bool isjun(Node *u) 
-                    
-                    
-
-{
-    if(!nochildren(u)) return true; // check if children present
-    if(u->count>0) return true;// check if end of word
-    
-
+bool isjun(Node* u) {
+    if (!nochildren(u)) return true;
+    if (u->count > 0) return true;
     return false;
 }
 
-void init(){
-    root = createNode();
-}
-
-void insert(string s){
-
-    Node *u = root;
+void insert(string s) {
+    Node* u = root;
     int len = s.size();
 
-    for(int i=0; i<len; i++){
+    for (int i = 0; i < len; i++) {
         char c = s[i];
         int ki;
-        if(c=='@') ki=26;
-        else if(c=='.') ki=27;
-        else  ki = (int)c - 65;
-        
-        if(u->children[ki]==NULL){
-        Node *v = createNode();
-        createEdge(u, v, ki);
+        if (c == '@') ki = 26;
+        else if (c == '.') ki = 27;
+        else ki = (int)c - 65;
+
+        if (u->children[ki] == nullptr) {
+            Node* v = new Node();  // Correct node initialization
+            createEdge(u, v, ki);
         }
         u = u->children[ki];
     }
- u->count++;
-
+    u->count++;
 }
 
-
-/*ONLY for 26 alphadet.@ and . is not handled here*/
-int Delete(Node *p, int d, string key)
-{
+int Delete(Node* p, int d, string key) {
     if (d == key.length()) {
-        // Handle the base case when we reach the end of the key
-        if (p->count ==0) return 0; // Word not present as no count
-        
-        // Word is present and count >= 1
-        if (!isleaf(p)) {
-            p->count--; // Junction node, decrement count
-            return 0; // Don't delete the junction node
+        if (p->count == 0) return 0;
+        if (!nochildren(p)) {
+            p->count--;
+            return 0;
         }
-        
         if (p->count > 1) {
-            p->count--; // Multiple instances of the same word, decrement count
-            return 0; // Don't delete the node as there are still other instances
+            p->count--;
+            return 0;
         }
-        
-        // Single instance of the word and it's a leaf node
-        return 1; // Delete the leaf node
+        return 1;
     }
 
-    if (p == NULL) {
-        return 0; // Key not found in the Trie
+    if (p == nullptr) {
+        return 0;
     }
 
-    int a = Delete(p->children[key[d] - 'A'], d + 1, key);  //p theke key[d] use kore porer node gelam.Akhon oi node
-    // theke permission er opekhkhae asi delete korbo ki ai edge.
+    int a = Delete(p->children[key[d] - 'A'], d + 1, key);
     if (a == 1) {
         deledge(p, key[d], a);
-        if (isjun(p)) return 0; // Don't delete junction nodes
-        else return 1; // Delete the node
+        if (isjun(p)) return 0;
+        else return 1;
     }
 
-    return 0; // Key not found in the Trie
+    return 0;
 }
 
+Node* search(Node* root, string key) {
+    Node* pCrawl = root;
 
+    for (int i = 0; i < key.length(); i++) {
+        int ki;
+        if (key[i] == '@') ki = 26;
+        else if (key[i] == '.') ki = 27;
+        else ki = key[i] - 'A';
+        if (!pCrawl->children[ki])
+            return nullptr;
 
-
-Node *search( Node *root, string key)
-{
-    Node *pCrawl = root;
-
-	for (int i = 0; i < key.length(); i++)
-	{
-		int ki;
-		if(key[i]=='@') ki=26;
-        else if(key[i]=='.') ki=27;
-        else  ki = key[i]-'A';
-		if (!pCrawl->children[ki])
-			return  NULL;
-
-		pCrawl = pCrawl->children[ki];
-	}
-
-	return (pCrawl);
-}
-
-void printLexicographic(Node *cur, string s){
-    if (cur->count>0){
-     for(int i=0; i<cur->count; i++)   cout<<s<<endl;
+        pCrawl = pCrawl->children[ki];
     }
 
-    for(int i=0; i<28; i++){
+    return (pCrawl);
+}
+
+void printLexicographic(Node* cur, string s) {
+    if (cur->count > 0) {
+        for (int i = 0; i < cur->count; i++) cout << s << endl;
+    }
+
+    for (int i = 0; i < 28; i++) {
         char cc;
-        if(i<26)
-        {
-            cc = (char)(i+65);
-        }
-        if(i==26) cc='@';
-        if(i==27) cc='.';
+        if (i < 26)
+            cc = (char)(i + 65);
+        else if (i == 26) cc = '@';
+        else if (i == 27) cc = '.';
 
-        if(cur->children[i])
-        {   cur=cur->children[i];
-
-            printLexicographic(cur, s+cc);
-            // s.pop_back();
-            //return;
+        if (cur->children[i]) {
+            Node* next = cur->children[i];  // Use a temporary pointer for recursion
+            printLexicographic(next, s + cc);
         }
     }
 }
 
+int main() {
+    int a, b, k;
+    string ff, fff;
+    string d = "";
+    root = new Node();  // Initialize the root node
 
-int main()
-{
-    init();
+    cin >> a;
 
-    int a,b,k;
-    string ff,fff;
-    string d="";
-    cin>>a;
-
-	for(int i=0;i<a;i++)
-    {
-        cin>>ff;
-        for(k=0;k<ff.length();k++)
-        {
-            d=d+ff[k];
-            if(ff[k]=='@')
-            break;
-
+    for (int i = 0; i < a; i++) {
+        cin >> ff;
+        for (k = 0; k < ff.length(); k++) {
+            d = d + ff[k];
+            if (ff[k] == '@') break;
         }
-        if(ff[k+1]=='G')
-        {
-            d="GMAIL.COM"+d;
 
+        if (ff[k + 1] == 'G') {
+            d = "GMAIL.COM" + d;
             insert(d);
-        }else if(ff[k+1]=='H')
-        {
-            d="HOTMAIL.COM"+d;
-
+        } else if (ff[k + 1] == 'H') {
+            d = "HOTMAIL.COM" + d;
             insert(d);
-        }else if(ff[k+1]=='Y')
-        {
-            d="YAHOO.COM"+d;
-
+        } else if (ff[k + 1] == 'Y') {
+            d = "YAHOO.COM" + d;
             insert(d);
         }
         d.clear();
-
-
     }
 
-
-    cin>>b;
-    for(int j=0;j<b;j++)
-    {
-        cin>>fff;
-        cout<<"Query "<<j+1<<" :";
-        Node *x=search(root,fff);
-        if(x==NULL)
-        {
-            cout<<"No result found"<<endl;
-        }else
-        {
-          printLexicographic(x,"",fff);
-
-
+    cin >> b;
+    for (int j = 0; j < b; j++) {
+        cin >> fff;
+        cout << "Query " << j + 1 << " :";
+        Node* x = search(root, fff);
+        if (x == nullptr) {
+            cout << "No result found" << endl;
+        } else {
+            printLexicographic(x, fff);
         }
-        cout<<endl;
-        cout<<endl;
-
-
-
+        cout << endl << endl;
     }
 
-
-
-
-
+    return 0;
 }
+
 /*
 10
 THE@GMAIL.COM

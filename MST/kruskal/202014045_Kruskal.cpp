@@ -72,6 +72,7 @@ for(int i=0;i<n;i++)
 {
     cin>>a>>b;
     par z(a,b);
+    am[i]=z;
     makeset(i);//make set based on  index as it's unique.
 
 }
@@ -80,16 +81,14 @@ for(int i=0;i<n;i++)
 {
 
     par zz=am[i];
-    for(int j=0;j<n;j++)
+    for(int j=i+1;j<n;j++)
     {
         par za=am[j];
 
-        if(j!=i)
-        {
+
            node d(i,j,abs(zz.x-za.x)+abs(zz.y-za.y));  //use index to make edge and weight which is correct as makeset was based on index.
            s.push_back(d);
 
-        }
     }
 
 }   

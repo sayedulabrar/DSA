@@ -84,6 +84,24 @@ public:
     }
 };
 
+
+Best Time to Buy and Sell Stock 1 time
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.empty()) return 0;
+        
+        int minP = 1e9;
+        int maxP = 0;
+        
+        for (int i = 0; i < prices.size(); ++i) {
+            minP = min(minP, prices[i]);
+            maxP = max(maxP, prices[i] - minP);
+        }
+        
+        return maxP;
+    }
+};
 Best Time to Buy and Sell Stock II any number of times to make max profit
 
 class Solution {
@@ -128,7 +146,9 @@ public:
 
 45 .Jump game 2
 
-This solution uses farthest to represent the farthest index you can reach at any given moment. The last_jump_end variable is updated with farthest since farthest ensures that we can reach the index it represents at that moment.This way we can get how many jumps needed.
+This solution uses farthest to represent the farthest index you can reach at any given moment. The last_jump_end variable is 
+updated with farthest since farthest ensures that we can reach the index it represents at that moment.This way we can get how many 
+jumps needed.
 
 class Solution {
 public:
@@ -172,7 +192,7 @@ public:
         sort(citations.begin(),citations.end());
         int n=citations.size();
         for(int i=0;i<n;i++){
-            int h=n-1;
+            int h=n-i;
             if(citations[i]>=h) return h;
         }
         return 0;

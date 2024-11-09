@@ -132,7 +132,7 @@ Node* deleteNode(Node* root, int key) {
         root->key = temp->key;
         root->right = deleteNode(temp, temp->key);
     }
-    return root;//  delete er por return else block korbe but uporer baki nodes er jonneto else kaj korbe na so oder jonne ei return .
+    return root;// in else block returned value paoar por upore nodes visit continue rakhte aita dorkar.
 }
  
     int height(Node *node){
@@ -222,32 +222,34 @@ private:
         }
     }
 
-   vector<int> rightView(TreeNode *root) {
-    if (root == nullptr) return {}; // Handle the case where the root is null
-    
-    queue<TreeNode*> q;
-    vector<int> result;
-    q.push(root);
+    vector<int> rightView(TreeNode* root) {
+        vector<int> result;
+        if (!root) return result;
 
-    while (!q.empty()) {
-        int size = q.size();
-        for (int i = 0; i < size; i++) {
-            TreeNode* node = q.front();
-            q.pop();
-            if (i == 0) { // This is the first node at this level
-                result.push_back(node->val);
-            }
-            if (node->right) {
-                q.push(node->right);
-            }
-            if (node->left) {
-                q.push(node->left);
+        queue<TreeNode*> q;
+        q.push(root);
+
+        while (!q.empty()) {
+            int levelSize = q.size();
+            
+            // Traverse all nodes at the current level
+            for (int i = 0; i < levelSize; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+                
+                // Capture the first element of each level for right view
+                if (i == levelSize - 1) {
+                    result.push_back(node->val);
+                }
+                
+                // Add child nodes to the queue
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
             }
         }
-    }
 
-    return result;
-}
+        return result;
+    }
 
 };
 
@@ -493,6 +495,27 @@ public:
         return root;
     }
 };
+
+
+
+
+
+// class Solution {
+// public:
+//     void invertTree(TreeNode* root) {
+//         if (!root) return;
+
+//         // Recursively invert the left and right subtrees
+//         invertTree(root->left);
+//         invertTree(root->right);
+
+//         // Swap the left and right children
+//         TreeNode* temp = root->left;
+//         root->left = root->right;
+//         root->right = temp;
+//     }
+// };
+
 
 
 class Solution {

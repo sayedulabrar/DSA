@@ -38,13 +38,8 @@ public:
         
         int nextIndex = findNextJob(jobs, index);
         
-        int maxProfit = 0; // Reset maxProfit to 0
-        int takeCurrent = jobs[index].profit + helper(jobs, nextIndex, memo);
-        int skipCurrent = helper(jobs, index + 1, memo);
-        
-        maxProfit = max(maxProfit, takeCurrent); // Update maxProfit with takeCurrent if it's greater
-        maxProfit = max(maxProfit, skipCurrent); // Update maxProfit with skipCurrent if it's greater
-        
+        maxProfit = max(jobs[index].profit + helper(jobs, nextIndex, memo), helper(jobs, index + 1, memo));
+
         memo[index] = maxProfit;
         
         return maxProfit;
@@ -86,8 +81,8 @@ Example 1:
 Input: points = [[10,16],[2,8],[1,6],[7,12]]
 Output: 2
 Explanation: The balloons can be burst by 2 arrows:
-- Shoot an arrow at x = 6, bursting the balloons [2,8] and [1,6].
-- Shoot an arrow at x = 11, bursting the balloons [10,16] and [7,12]
+- Shoot an arrow at length 6, bursting the balloons [2,8] and [1,6].
+- Shoot an arrow at length 11, bursting the balloons [10,16] and [7,12]
 
 
 

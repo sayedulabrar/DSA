@@ -226,9 +226,9 @@ int findPivot(const vector<int>& nums) {
         if (nums[mid - 1] > nums[mid]) {
             return mid;
         }
-
+~
         // Adjust search range
-        if (nums[mid] >= nums[start]) { ///>= to handle duplicates
+        if (nums[mid] >= nums[start]) { ///>= to handle duplicates and move right as ascending array. 1 2 3 3 3 5
             start = mid + 1;
         } else {
             end = mid - 1;
@@ -281,52 +281,42 @@ int findPivot(const vector<int>& nums) {
 
 
 
-
-
-
-
-
-
-
-
-
 split the array into m subarray and minimize the maxsum of those m subarray .
-int splitArray(int[] nums, int m) {
-        int start = 0;
-        int end = 0;
 
-        for (int i = 0; i < nums.length; i++) {
-            start = Math.max(start, nums[i]); // in the end of the loop this will contain the max item of the array
-            end += nums[i];
-        }
+  int splitArray(vector<int>& nums, int m) {
+    int start = 0, end = 0;
 
-        // binary search
-        while (start < end) {
-            // try for the middle as potential ans
-            int mid = start + (end - start) / 2;
-
-            // calculate how many pieces you can divide this in with this max sum
-            int sum = 0;
-            int pieces = 1;
-            for(int num : nums) {
-                if (sum + num > mid) {
-                    // you cannot add this in this subarray, make new one
-                    // say you add this num in new subarray, then sum = num
-                    sum = num;
-                    pieces++;
-                } else {
-                    sum += num;
-                }
-            }
-
-            if (pieces > m) {
-                start = mid + 1;
-            } else if(pieces<m){
-                end = mid-1;
-            }else{
-                end=mid;
-            }//suppose it reached m and end becomes mid then we will try to go farther to right to find if there exist any solution smaller.so it works.
-
-        }
-        return end; // here start == end
+    // Calculate the initial range
+    for (int num : nums) {
+        start = max(start, num); // Maximum single element
+        end += num;             // Sum of all elements
     }
+
+    // Binary search to find the minimum largest subarray sum
+    while (start <= end) {
+        int mid = start + (end - start) / 2;
+
+        // Check how many subarrays are needed for this `mid`
+        int sum = 0, pieces = 1;
+        for (int num : nums) {
+            if (sum + num > mid) {
+                // Start a new subarray
+                sum = num;
+                pieces++;
+            } else {
+                sum += num;
+            }
+        }
+
+        // Adjust the search range
+        if (pieces > m) {
+            start = mid + 1; // Increase `mid`
+        } else {
+            end = mid - 1;   // Decrease `mid`
+        }
+    }
+
+    // `start` will point to the smallest valid `mid`
+    return start;
+}
+

@@ -291,19 +291,22 @@ public:
         
         return numIslands;
     }
+
+    int dirs[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
     
     void dfs(vector<vector<char>>& grid, int i, int j) {
 
-        
-        if (i < 0 || j < 0 || i >= m || j >= n || grid[i][j] != '1') return;
-        
-        grid[i][j] = '0'; // Mark current cell as visited
-        
-        // Explore neighbors
-        dfs(grid, i + 1, j);
-        dfs(grid, i - 1, j);
-        dfs(grid, i, j + 1);
-        dfs(grid, i, j - 1);
+        grid[i][j] = '0'; //dfs approch. Marking visited at the step when we will also take out it's children and shove it in stack of calls
+
+        for (auto dir : dirs) {
+            int x = i + dir[0];
+            int y = j + dir[1];
+
+            if (x >= 0 && y >= 0 && x < m && y < n && grid[x][y] == '1') {
+                
+                dfs(grid, x, y);
+            }
+        }
     }
 };
 
@@ -569,7 +572,7 @@ public:
         // Null out the left child (essential for linked list structure)
         root->left = nullptr;
         //see the example below
-        TreeNode* tail = root;
+        TreeNode* tail = root;  
         while (tail->right) {
             tail = tail->right;
         }
@@ -580,12 +583,12 @@ public:
     }
 };
 
-AT THE END LEFT THERE COULD BE RIGHT SUBTREE WITH HIGHER HEIGHT.So we latten right subtree at the end.
+AT THE END LEFT THERE COULD BE RIGHT SUBTREE WITH HIGHER HEIGHT.So we flatten right subtree at the end.
 
 i
     1                   
    / \
-  2   5
+  2   5         
  / \
 3   4
 
@@ -634,44 +637,6 @@ public:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #### Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder 
 traversal of the same tree.Now prepare level order traversal.
 
@@ -681,14 +646,7 @@ In preorder there is root ,[root of left subtree,remaining of the left subtree],
 
 Inorder left subtree,root,right subtree.
 
-It means if there are preorder 0 1 5 2 15 4 .Inorder 1 5 2 0 15 4 .(just for Example not perfect.)
-Here root 0 .left 1,5,2.right 15,4 .so index 1 to 3 of preorder is of left and 0 to 2 for inorder.And index 4 to 5 of preorder is of right 
-and 4 to 5 for inorder.
-                                     
-
-
-
-So if we go serially in preorder we will get roots in the level order.And if we search that root index in inorder then we will be able to 
+If we go serially in preorder we will get roots in the level order.And if we search that root index in inorder then we will be able to 
 get the elements of left subtree and right subtree.
                     
 
@@ -724,6 +682,9 @@ TreeNode* buildTree(vector < int > & preorder, vector < int > & inorder) {
 }
 };
 
+
+// preStart + 1 to preStart + leftSubtreeSize because the number of elements results in leftSubtreeSize. That's why range is like that.
+// postorderStart, postorderStart + leftSubtreeSize - 1  because the number of elements results in leftSubtreeSize too. ......
 
 
 
@@ -768,8 +729,19 @@ A region is captured by flipping all 'O's into 'X's in that surrounded region.
 Example 1:
 
 
-Input: board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
-Output: [["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+Input: 
+board = [
+        ["X","X","X","X"],
+        ["X","O","O","X"],
+        ["X","X","O","X"],
+        ["X","O","X","X"]]
+
+Output: [
+        ["X","X","X","X"],
+        ["X","X","X","X"],
+        ["X","X","X","X"],
+        ["X","O","X","X"]]
+
 Explanation: Notice that an 'O' should not be flipped if:
 - It is on the border, or
 - It is adjacent to an 'O' that should not be flipped.
@@ -793,33 +765,7 @@ public:
     
     void solve(vector<vector<char>>& board) {
       
-      //We will use boundary DFS to solve this problem
-        
-      // Let's analyze when an 'O' cannot be flipped,
-      // if it has atleast one 'O' in it's adjacent, AND ultimately this chain of adjacent 'O's is connected to some 'O' which lies on boundary of board
-        
-      //consider these two cases for clarity :
-      /*
-        O's won't be flipped          O's will be flipped
-        [X O X X X]                   [X X X X X]     
-        [X O O O X]                   [X O O O X]
-        [X O X X X]                   [X O X X X] 
-        [X X X X X]                   [X X X X X]
-      
-      So we can conclude if a chain of adjacent O's is connected some O on boundary then they cannot be flipped
-      
-      */
-        
-      //Steps to Solve :
-      //1. Move over the boundary of board, and find O's 
-      //2. Every time we find an O, perform DFS from it's position
-      //3. In DFS convert all 'O' to '#'      (why?? so that we can differentiate which 'O' can be flipped and which cannot be)   
-      //4. After all DFSs have been performed, board contains three elements,#,O and X
-      //5. 'O' are left over elements which are not connected to any boundary O, so flip them to 'X'
-      //6. '#' are elements which cannot be flipped to 'X', so flip them back to 'O'
-      //7. finally, Upvote the solution😊   
-        
-      
+
      int m = board.size();
         
       if(m == 0) return;  

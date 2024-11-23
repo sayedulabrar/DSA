@@ -165,9 +165,8 @@ if(arr[n-1]>arr[n-2]) return n-1;
 while(start<=end){
 if(arr[mid]>arr[mid+1]&&arr[mid]>arr[mid-1]) return mid;
 if(arr[mid]<arr[mid+1]) start=mid+1;
-else if(arr[mid]>arr[mid+1]) end=mid-1;
+else if(arr[mid] < arr[mid-1]) end=mid-1;
 }
-
 
 }
 
@@ -196,16 +195,14 @@ int main()
 
 
 
-33. Search in Rotated Sorted Array
+33. Search in Rotated Sorted Array all unique
+
 class Solution {
 public:
-int findPivot(const vector<int>& nums) {
-    int start = 0, end = nums.size() - 1;
 
-    // Handle the case where the array is not rotated
-    if (nums[start] < nums[end]) {
-        return 0;
-    }
+int findPivot(const vector<int>& nums) {
+    int start = 0;
+    int end = nums.size() - 1;
 
     // Check if start or end is the pivot
     if (nums[start] > nums[start + 1]) {
@@ -215,28 +212,28 @@ int findPivot(const vector<int>& nums) {
         return end;
     }
 
+
     // Binary search for the pivot
     while (start <= end) {
         int mid = start + (end - start) / 2;
 
-        // Check if mid is the pivot
-        if (nums[mid] > nums[mid + 1]) {
-            return mid + 1;
-        }
+        // Ensure mid is within bounds and check for the pivot
         if (nums[mid - 1] > nums[mid]) {
             return mid;
         }
-~
-        // Adjust search range
-        if (nums[mid] >= nums[start]) { ///>= to handle duplicates and move right as ascending array. 1 2 3 3 3 5
-            start = mid + 1;
+
+        // Adjust search range based on comparison with nums[0]
+        if (nums[mid] > nums[0]) {
+            start = mid + 1;  // Pivot is on the right side
         } else {
-            end = mid - 1;
+            end = mid - 1;    // Pivot is on the left side
         }
     }
 
-    return 0; // Default return for a non-rotated array
+    return 0; // Default return (shouldn't reach here for valid input)
 }
+
+
 
     int search(vector<int>& nums, int target) {
         int n = nums.size();

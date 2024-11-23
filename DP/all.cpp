@@ -201,3 +201,29 @@ int solve(vector<vector<char>>& matrix, int i , int j ,int& maxi,vector<vector<i
           return maxi * maxi; 
     }
 };
+
+
+
+
+
+class Solution {
+public:
+int coinChangeHelper(vector<int>& coins, int level, int amount, vector<vector<int>>& dp) {
+    if (amount == 0) return 0;
+    if (level >= coins.size()) return -1;
+    if (dp[level][amount] != 0) return dp[level][amount];
+    
+    int take = (amount >= coins[level]) ? coinChangeHelper(coins, level, amount - coins[level], dp) : -1;
+    int notTake = coinChangeHelper(coins, level + 1, amount, dp);
+    int minCoins = (take == -1) ? notTake : ((notTake == -1) ? take + 1 : min(take + 1, notTake));
+    
+    dp[level][amount] = minCoins;
+    
+    return minCoins;
+}
+
+int coinChange(vector<int>& coins, int amount) {
+    vector<vector<int>> dp(coins.size(), vector<int>(amount + 1, 0));
+    return coinChangeHelper(coins, 0, amount, dp);
+}
+};

@@ -1,6 +1,7 @@
-Given two arrays representing children’s green factor and cookie sizes, the goal is to maximise the number of content children.
+Given two arrays representing children’s greed factor and cookie sizes, the goal is to maximise the number of content children.
 
-Each child i has a greed factor of g[i], which is the minimum size of a cookie that will make the child content. Each cookie j has a size of s[j]. If s[j] >= g[j], we can assign cookie j to child i, making the child content. Each child can only receive one cookie.
+Each child i has a greed factor of g[i], which is the minimum size of a cookie that will make the child content. Each cookie j has a size 
+of s[j]. If s[j] >= g[i], we can assign cookie j to child i, making the child content. Each child can only receive one cookie.
 
 #include <vector>   
 #include <algorithm>
@@ -87,33 +88,39 @@ int main() {
 
 
 
-Given a value V, if we want to make a change for V Rs, and we have an infinite supply of each of the denominations in Indian currency, i.e., we have an infinite supply of { 1, 2, 5, 10, 20, 50, 100, 500, 1000} valued coins/notes, what is the minimum number of coins and/or notes needed to make the change.
+Given a value V, if we want to make a change for V Rs, and we have an infinite supply of each of the denominations in 
+Indian currency, i.e., we have an infinite supply of { 1, 2, 5, 10, 20, 50, 100, 500, 1000} valued coins/notes, what is the minimum 
+number of coins and/or notes needed to make the change.
 
-#include<bits/stdc++.h>
-
-
+#include <bits/stdc++.h>
 using namespace std;
-int main() {
-  int V = 49;
-  vector < int > ans;
-  int coins[] = {1, 2, 5, 10, 20, 50, 100, 500, 1000};
-  int n = 9;
-  for (int i = n - 1; i >= 0; i--) {
-    while (V >= coins[i]) {
-      V -= coins[i];
-      ans.push_back(coins[i]);
-    }
-  }
-  cout<<"The minimum number of coins is "<<ans.size()<<endl;
-  cout<<"The coins are "<<endl;
-  for (int i = 0; i < ans.size(); i++) {
-    cout << ans[i] << " ";
-  }
 
-  return 0;
+int main() {
+    int V = 49;  // Change value
+    vector<int> ans;
+    int coins[] = {1, 2, 5, 10, 20, 50, 100, 500, 1000};
+    int n = sizeof(coins) / sizeof(coins[0]);
+
+    for (int i = n - 1; i >= 0; i--) {
+        if(V==0) break;
+        if (V >= coins[i]) {
+            int count = V / coins[i];  // Calculate how many coins/notes of coins[i] are needed
+            V %= coins[i];             // Calculate the remaining amount
+            for (int j = 0; j < count; j++) {
+                ans.push_back(coins[i]);
+            }
+        }
+    }
+
+    cout << "The minimum number of coins is " << ans.size() << endl;
+    cout << "The coins are: ";
+    for (int i = 0; i < ans.size(); i++) {
+        cout << ans[i] << " ";
+    }
+    return 0;
 }
 
-
+BUT IF THIS WASN NOT INDIAN CURRENCY BUT CAN BE ANYTHING WE NEEDED TO USE DP AS INDIANCURRECY ARE JUST MULTIPLE OF SMALLER ONES.
 
  Given an array representing a queue of customers and the value of bills they hold, determine if it is possible to provide correct change to each customer. Customers can only pay with 5$, 10$ or 20$ bills and we initially do not have any change at hand. Return true, if it is possible to provide correct change for each customer otherwise return false.
                             

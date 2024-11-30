@@ -120,9 +120,14 @@ int main() {
     return 0;
 }
 
-BUT IF THIS WASN NOT INDIAN CURRENCY BUT CAN BE ANYTHING WE NEEDED TO USE DP AS INDIANCURRECY ARE JUST MULTIPLE OF SMALLER ONES.
+BUT IF THIS WAS NOT INDIAN CURRENCY BUT CAN BE ANYTHING WE NEEDED TO USE DP AS INDIANCURRECY ARE JUST MULTIPLE OF SMALLER.
+see all.cpp:209 .
 
- Given an array representing a queue of customers and the value of bills they hold, determine if it is possible to provide correct change to each customer. Customers can only pay with 5$, 10$ or 20$ bills and we initially do not have any change at hand. Return true, if it is possible to provide correct change for each customer otherwise return false.
+
+At a lemonade stand, each lemonade costs $5.
+Given an array representing a queue of customers and the value of bills they hold, determine if it is possible to provide correct change 
+to each customer. Customers can only pay with 5$, 10$ or 20$ bills and we initially do not have any change at hand. Return true, if it is
+possible to provide correct change for each customer otherwise return false.
                             
 #include <vector>
 #include <algorithm>
@@ -222,7 +227,9 @@ int main() {
                             
 
 
-There is one meeting room in a firm. You are given two arrays, start and end each of size N.For an index ‘i’, start[i] denotes the starting time of the ith meeting while end[i]  will denote the ending time of the ith meeting. Find the maximum number of meetings that can be accommodated if only one meeting can happen in the room at a  particular time. Print the order in which these meetings will be performed.
+There is one meeting room in a firm. You are given two arrays, start and end each of size N.For an index ‘i’, start[i] denotes the 
+starting time of the ith meeting while end[i]  will denote the ending time of the ith meeting. Find the maximum number of meetings that can
+be accommodated if only one meeting can happen in the room at a  particular time. Print the order in which these meetings will be performed.
 
 
 #include <bits/stdc++.h>
@@ -237,11 +244,13 @@ struct meeting {
 class Solution {
    public:
       bool static comparator(struct meeting m1, meeting m2) {
-         if (m1.end < m2.end) return true;
-         else if (m1.end > m2.end) return false;
-         else if (m1.pos < m2.pos) return true;
-         return false;
-      }
+      if (m1.end != m2.end) {
+                  return m1.end < m2.end;  // Primary: sort by end time
+            }
+      return m1.start > m2.start;  // Secondary: if end times equal, prefer later start time
+    }
+
+
    void maxMeetings(int s[], int e[], int n) {
       struct meeting meet[n];
       for (int i = 0; i < n; i++) {
@@ -282,7 +291,8 @@ int main() {
 
 
 
-We are given two arrays that represent the arrival and departure times of trains that stop at the platform. We need to find the minimum number of platforms needed at the railway station so that no train has to wait.
+We are given two arrays that represent the arrival and departure times of trains that stop at the platform. We need to find the minimum 
+number of platforms needed at the railway station so that no train has to wait.
 
 #include<bits/stdc++.h>
  using namespace std;
@@ -329,7 +339,9 @@ We are given two arrays that represent the arrival and departure times of trains
 
 
 
-Given a list of job durations representing the time it takes to complete each job. Implement the Shortest Job First algorithm to find the average waiting time for these jobs.
+Given a list of job durations representing the time it takes to complete each job. Implement the Shortest Job First algorithm to find the 
+average waiting time for these jobs.
+
 #include <vector>   
 #include <algorithm>
 #include <iostream>
@@ -386,7 +398,8 @@ int main() {
        
 
 
-The weight of N items and their corresponding values are given. We have to put these items in a knapsack of weight W such that the total value obtained is maximized.
+The weight of N items and their corresponding values are given. We have to put these items in a knapsack of weight W such that the total 
+value obtained is maximized.
 
 Note: We can either take the item as a whole or break it into smaller units.
 
@@ -440,7 +453,9 @@ int main() {
 
 
 
-You are given a set of N jobs where each job comes with a deadline and profit. The profit can only be earned upon completing the job within its deadline. Find the number of jobs done and the maximum profit that can be obtained. Each job takes a single unit of time and only one job can be performed at a time.
+You are given a set of N jobs where each job comes with a deadline and profit. The profit can only be earned upon completing the job within
+its deadline. Find the number of jobs done and the maximum profit that can be obtained. Each job takes a single unit of time and only one 
+job can be performed at a time.
 
 #include<bits/stdc++.h>
 
@@ -472,6 +487,9 @@ class Solution {
 
       int countJobs = 0, jobProfit = 0;
 
+// As we have already sorted the array by profit ,at first we will encounter max profits. so we will keep filling the slots <=it's dead 
+// line and this way we will fill with the max profits .
+
       for (int i = 0; i < n; i++) {
          for (int j = arr[i].dead; j > 0; j--) {
             if (slot[j] == -1) {
@@ -497,3 +515,153 @@ int main() {
 
    return 0;
 } 
+
+
+
+
+
+
+Best Time to Buy and Sell Stock 1 time
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.empty()) return 0;
+        
+        int minP = 1e9;
+        int maxP = 0;
+        
+        for (int i = 0; i < prices.size(); ++i) {
+            minP = min(minP, prices[i]);
+            maxP = max(maxP, prices[i] - minP);
+        }
+        
+        return maxP;
+    }
+};
+
+Best Time to Buy and Sell Stock II any number of times to make max profit
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int profit=0;
+        for(int i=1;i<prices.size();i++){
+            if(prices[i]>prices[i-1]){//local maxima-local minima
+                profit+=prices[i]-prices[i-1];
+            }
+        }
+        return profit;
+        
+    }
+};
+
+55. Jump Game
+
+Input: nums = [2,3,1,1,4]
+Output: true
+Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
+
+[3, 2, 1, 0, 4, 1], the function will return false because it is not possible to reach the end of the array as it will stuck at reachable 3 at index 3 and in next iteration i=4 where it will return false.
+
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        
+        int n = nums.size();
+        int reachable = 0;
+        
+        for(int i=0;i<n;++i)
+        {
+            if(reachable < i)
+                return false;
+            reachable = max(reachable,i+nums[i]);
+        }
+        return true;        
+    }
+};
+
+
+
+134. Gas Station
+Input: gas = [1,2,3,4,5], cost = [3,4,5,1,2]
+Output: 3
+Explanation:
+Start at station 3 (index 3) and fill up with 4 unit of gas. Your tank = 0 + 4 = 4
+Travel to station 4. Your tank = 4 - 1 + 5 = 8
+Travel to station 0. Your tank = 8 - 2 + 1 = 7
+Travel to station 1. Your tank = 7 - 3 + 2 = 6
+Travel to station 2. Your tank = 6 - 4 + 3 = 5
+Travel to station 3. The cost is 5. Your gas is just enough to travel back to station 3.
+Therefore, return 3 as the starting index.
+
+totalgass < totalcost not possible ever.
+the key logic is about checking gas availability at every station and resetting the start position when you can’t proceed.
+The tank += gas[i] - cost[i]; approach keeps track of whether you have enough gas at each station and ensures that 
+if you can''t proceed from a certain station, you move the starting point forward.
+
+class Solution {
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int totalGas = 0;
+        int totalCost = 0;
+        int tank = 0;
+        int start = 0;
+        
+        for (int i = 0; i < gas.size(); ++i) {
+            totalGas += gas[i];
+            totalCost += cost[i];
+            tank += gas[i] - cost[i];
+            
+            // If at any station, the tank becomes negative,
+            // reset the start to the next station and reset the tank
+            if (tank < 0) {
+                start = (i + 1)%gas.size();
+                tank = 0;
+            }
+        }
+        
+        // If total gas is less than total cost, it's impossible to complete the circuit
+        if (totalGas < totalCost)
+            return -1;
+        
+        return start;
+    }
+};
+
+
+
+**Max area beiween 2 poles**
+Input: height = [1,8,6,2,5,4,8,3,7]
+Output: 49
+
+**why we move pointer with the lower height?
+The width (distance between the two poles) is always shrinking as you move the pointers towards each other.
+Therefore, to maximize the area, you need to increase the height of the poles you''re considering, because:
+Area = height × width
+As the width (right - left) decreases, increasing the height is the only way to potentially get a larger area.
+
+
+
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int left = 0;
+        int right = height.size() - 1;
+        int maxArea = 0;
+        
+        while (left < right) {
+            int currentArea = min(height[left], height[right]) * (right - left);
+            maxArea = max(maxArea, currentArea);
+            
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        
+        return maxArea;
+    }
+};
+
+

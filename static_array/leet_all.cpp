@@ -85,63 +85,6 @@ public:
 };
 
 
-Best Time to Buy and Sell Stock 1 time
-class Solution {
-public:
-    int maxProfit(vector<int>& prices) {
-        if (prices.empty()) return 0;
-        
-        int minP = 1e9;
-        int maxP = 0;
-        
-        for (int i = 0; i < prices.size(); ++i) {
-            minP = min(minP, prices[i]);
-            maxP = max(maxP, prices[i] - minP);
-        }
-        
-        return maxP;
-    }
-};
-Best Time to Buy and Sell Stock II any number of times to make max profit
-
-class Solution {
-public:
-    int maxProfit(vector<int>& prices) {
-        int profit=0;
-        for(int i=1;i<prices.size();i++){
-            if(prices[i]>prices[i-1]){//local maxima-local minima
-                profit+=prices[i]-prices[i-1];
-            }
-        }
-        return profit;
-        
-    }
-};
-
-55. Jump Game
-
-Input: nums = [2,3,1,1,4]
-Output: true
-Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
-
-[3, 2, 1, 0, 4, 1], the function will return false because it is not possible to reach the end of the array as it will stuck at reachable 3 at index 3 and in next iteration i=4 where it will return false.
-
-class Solution {
-public:
-    bool canJump(vector<int>& nums) {
-        
-        int n = nums.size();
-        int reachable = 0;
-        
-        for(int i=0;i<n;++i)
-        {
-            if(reachable < i)
-                return false;
-            reachable = max(reachable,i+nums[i]);
-        }
-        return true;        
-    }
-};
 
 
 45 .Jump game 2
@@ -269,52 +212,6 @@ vector<int> productExceptSelf(vector<int>& nums) {
 
 
 
-134. Gas Station
-Input: gas = [1,2,3,4,5], cost = [3,4,5,1,2]
-Output: 3
-Explanation:
-Start at station 3 (index 3) and fill up with 4 unit of gas. Your tank = 0 + 4 = 4
-Travel to station 4. Your tank = 4 - 1 + 5 = 8
-Travel to station 0. Your tank = 8 - 2 + 1 = 7
-Travel to station 1. Your tank = 7 - 3 + 2 = 6
-Travel to station 2. Your tank = 6 - 4 + 3 = 5
-Travel to station 3. The cost is 5. Your gas is just enough to travel back to station 3.
-Therefore, return 3 as the starting index.
-
-totalgass < totalcost not possible ever.
-the key logic is about checking gas availability at every station and resetting the start position when you can’t proceed.
-The tank += gas[i] - cost[i]; approach keeps track of whether you have enough gas at each station and ensures that 
-if you can''t proceed from a certain station, you move the starting point forward.
-
-class Solution {
-public:
-    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
-        int totalGas = 0;
-        int totalCost = 0;
-        int tank = 0;
-        int start = 0;
-        
-        for (int i = 0; i < gas.size(); ++i) {
-            totalGas += gas[i];
-            totalCost += cost[i];
-            tank += gas[i] - cost[i];
-            
-            // If at any station, the tank becomes negative,
-            // reset the start to the next station and reset the tank
-            if (tank < 0) {
-                start = (i + 1)%gas.size();
-                tank = 0;
-            }
-        }
-        
-        // If total gas is less than total cost, it's impossible to complete the circuit
-        if (totalGas < totalCost)
-            return -1;
-        
-        return start;
-    }
-};
-
 6. Zigzag Conversion
 
 The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a
@@ -356,42 +253,6 @@ public:
         
     }
 };
-
-**Max area beiween 2 poles**
-Input: height = [1,8,6,2,5,4,8,3,7]
-Output: 49
-
-**why we move pointer with the lower height?
-The width (distance between the two poles) is always shrinking as you move the pointers towards each other.
-Therefore, to maximize the area, you need to increase the height of the poles you''re considering, because:
-Area = height × width
-As the width (right - left) decreases, increasing the height is the only way to potentially get a larger area.
-
-
-
-class Solution {
-public:
-    int maxArea(vector<int>& height) {
-        int left = 0;
-        int right = height.size() - 1;
-        int maxArea = 0;
-        
-        while (left < right) {
-            int currentArea = min(height[left], height[right]) * (right - left);
-            maxArea = max(maxArea, currentArea);
-            
-            if (height[left] < height[right]) {
-                left++;
-            } else {
-                right--;
-            }
-        }
-        
-        return maxArea;
-    }
-};
-
-
 
 
 

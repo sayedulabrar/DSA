@@ -27,7 +27,8 @@ bool canConstruct(string ransomNote, string magazine) {
 
 
 
-It is easier as both should have same frequency of char for both .So we can use single map and check char frequency.
+It is easier as both should have same frequency of char for both .So we can use single map and check char 
+frequency.
 bool isAnagram(string s, string t) {
     // If the lengths of the strings are different, they can't be anagrams
     if (s.size() != t.size())
@@ -35,7 +36,6 @@ bool isAnagram(string s, string t) {
     
     // Hashmap to store character frequencies in string s
     unordered_map<char, int> freq;
-    int count = s.size();
 
     // Populate freq with character frequencies from string s
     for (char c : s)
@@ -46,14 +46,13 @@ bool isAnagram(string s, string t) {
         // If character exists in s and its frequency is greater than 0, decrement the count
         if (freq.find(c) != freq.end() && freq[c] > 0) {
             freq[c]--;
-            count--;// no need as both have same size and there can't be a char that is there after covering all char of t.
         } else {
             return false;
         }
     }
 
     // If all characters in s are accounted for in t, they are anagrams
-    return count == 0;
+    return true;
 }
 
 

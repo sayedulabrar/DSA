@@ -3,6 +3,7 @@
 class Solution {
 public:
     void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        //last index= size - 1 so k=(m+n)-1 as m+n is the size.
         int i = m - 1; // Index to iterate through nums1
         int j = n - 1; // Index to iterate through nums2
         int k = m + n - 1; // Index to insert elements into nums1
@@ -36,16 +37,18 @@ class Solution {
 public:
     int removeDuplicates(vector<int>& nums) {
         if (nums.empty()) return 0;
-        
-        int k = 0; 
-        
-        for (int i = 1; i < nums.size(); ++i) {
+
+        int k = 0; // Pointer to track the last unique element
+        int i = 1; // Pointer to iterate through the array
+
+        while (i < nums.size()) {
             if (nums[i] != nums[k]) {
-                nums[++k] = nums[i];              
+                nums[++k] = nums[i];// because for 1 1 2 if we use k++ then at k=0 2 will be placed but it's supposed to be later of 1.
             }
+            ++i; 
         }
-        
-        return k+1;
+
+        return k + 1; // k is the index of the last unique element, so length is k + 1
     }
 };
 
@@ -77,7 +80,8 @@ public:
 class Solution {
 public:
     void rotate(vector<int>& nums, int k) {
-        int n = nums.size();  
+        int n = nums.size();
+        k %= n;  
         reverse(nums.begin(), nums.end());
         reverse(nums.begin(), nums.begin() + k);
         reverse(nums.begin() + k, nums.end());
@@ -89,9 +93,16 @@ public:
 
 45 .Jump game 2
 
-This solution uses farthest to represent the farthest index you can reach at any given moment. The last_jump_end variable is 
-updated with farthest since farthest ensures that we can reach the index it represents at that moment.This way we can get how many 
-jumps needed.
+Here at 0 th index of the loop the first farthest is assigned then we continue to update farthest and only when i==last_jump_end which was
+mainly jump the value at 0th index and then we assign the present farthest as the next jump end. But for achiving that how can he be sure 
+that he can achive it with the jump from at the present i. 
+The answer is he has already reached that farthest in one of previous jump or at the present i's jump . So here we will naturally have to use
+it and for it we would have jumped <=0 th index's farthest. As there is clearly written we can jump at most X which means we can also jump
+<=X no problem. So if we had jumped <=X then we would have touched that index that's responsible for next farthest jump and jumped . 
+
+So in that condition we are just taking advantage of this situation by continuously updating farthest and when the farthest that was 
+assigned to last_jump_end ends we assign present farthest.And for it we would have needed one jup as if we jumped from the <=X position
+where that current farthest position's jump was present at that index.   So the solution is perfect.
 
 class Solution {
 public:
@@ -121,32 +132,30 @@ Example 1:
 Input: citations = [3,0,6,1,5]
 Output: 3
 Explanation: [3,0,6,1,5] means the researcher has 5 papers in total and each of them had received 3, 0, 6, 1, 5 citations respectively.
-Since the researcher has 3 papers with at least 3 citations each and the remaining two with no more than 3 citations each, their h-index is 3.
+Since the researcher has 3 papers with at least 3 citations each and the remaining two with no more than 3 citations each, their h-index is
+3
 Example 2:
 
 Input: citations = [1,3,1]
 Output: 1
-
+The h-index is defined as the maximum value of h such that the given researcher has published at least h papers that have each been cited 
+at least h times.
 
 
 class Solution {
 public:
     int hIndex(vector<int>& citations) {
-        sort(citations.begin(),citations.end());
-        int n=citations.size();
-        for(int i=0;i<n;i++){
-            int h=n-i;
-            if(citations[i]>=h) return h;
+        int n = citations.size();
+        sort(citations.begin(), citations.end(), greater<>());
+        for(int i = 0; i < n; i++) {
+            int h = i + 1;
+            if(citations[i] <= h) continue;
+            else return h - 1;
         }
-        return 0;
+        return n;//return n at the end to handle the case where all papers have more citations than their index position
     }
 };
 
-
-// 6 5 3  1 0 
-// > > >= here citations become less than 3 and papers > 3 so we return i not position i+1; As we can have h  papers >= h citations;
-// 1 2 3  4 5
-// It said h papers with citations >= h.So even if there are papers with same number of citations it won't matter. 3 3 3 3 2 1  .Here at position 2 we get citations[i]>=i+1 last .After that citations remain at 3 but paper number crosses 3.So then we willthe index i.
 
 **remove an element from vector and get random.**
     bool remove(int val) {
@@ -234,11 +243,13 @@ public:
         int i=0;
         while(i<s.length()){
             v[k].push_back(s[i]);
+
+
+            if(k==numRows-1) increasing=false;
+            else if(k==0) increasing=true;
+
             if(increasing) k++;
             else k--;
-
-            if(k==numRows) k=k-2; increasing=false;
-            else if(k==-1) k=k+2; increasing=true;
 
         i++;
         }
@@ -290,6 +301,47 @@ public:
                 }
                 
                 numMap[nums[j]] = j; // we need it here else it's current element can end up be the 2nd and 3rd element too .
+            }
+        }
+        
+        return result;
+    }
+};
+//For real world scene this is better like map problems with various data types .
+
+
+
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> result;
+        int n = nums.size();
+        sort(nums.begin(), nums.end()); // Sort the array
+        
+        for (int i = 0; i < n - 2; ++i) {
+            // Skip duplicates for the first element
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            
+            int target = -nums[i];
+            int low = i + 1, high = n - 1;
+            
+            while (low < high) {
+                int sum = nums[low] + nums[high];
+                
+                if (sum == target) {
+                    result.push_back({nums[i], nums[low], nums[high]});
+                    
+                    // Skip duplicates for the second and third elements
+                    while (low < high && nums[low] == nums[low + 1]) ++low;
+                    while (low < high && nums[high] == nums[high - 1]) --high;
+                    
+                    ++low;
+                    --high;
+                } else if (sum < target) { //the nums can be -,+. So don't worry think normally.
+                    ++low; // Increase the sum
+                } else {
+                    --high; // Decrease the sum
+                }
             }
         }
         

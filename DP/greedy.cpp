@@ -242,7 +242,7 @@ struct meeting {
 };
 
 class Solution {
-   public:
+   public: 
       bool static comparator(struct meeting m1, meeting m2) {
       if (m1.end != m2.end) {
                   return m1.end < m2.end;  // Primary: sort by end time
@@ -250,6 +250,8 @@ class Solution {
       return m1.start > m2.start;  // Secondary: if end times equal, prefer later start time
     }
 
+// Sorting by descending start time within the same end time ensures that we fill the room's schedule more efficiently by leaving gaps for 
+// shorter or earlier meetings. This approach helps maximize the number of non-overlapping meetings in the room.
 
    void maxMeetings(int s[], int e[], int n) {
       struct meeting meet[n];
@@ -572,7 +574,7 @@ public:
         
         for(int i=0;i<n;++i)
         {
-            if(reachable < i)
+            if(i > reachable)
                 return false;
             reachable = max(reachable,i+nums[i]);
         }
@@ -613,7 +615,8 @@ public:
             tank += gas[i] - cost[i];
             
             // If at any station, the tank becomes negative,
-            // reset the start to the next station and reset the tank
+            // reset the start to the next station and reset the tank because before that station the cost > gas and if we include that
+            // part we will never get the answer.
             if (tank < 0) {
                 start = (i + 1)%gas.size();
                 tank = 0;

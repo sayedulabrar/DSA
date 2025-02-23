@@ -12,32 +12,50 @@ void generatePermutations(string str) {
     } while (next_permutation(str.begin(), str.end()));
 }
 
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
 
+using namespace std;
 
-vector<string> generateCombinations(const string& s) {
-    int n = s.length();
-    queue<string> q;
-    q.push("");
-    vector<string> total;
+class Move {
+public:
+    string top;
+    int start;
+    
+    Move(string t, int s) : top(t), start(s) {} // Constructor with initializer list
+};
+
+vector<string> generateCombinations(string s) {
+    sort(s.begin(), s.end());  // Sort to handle duplicates easily
+    queue<Move> q;
+    q.push(Move("", 0));
+    
+    vector<string> result;
 
     while (!q.empty()) {
-        string top = q.front();
+        Move current = q.front(); // Correct object extraction
         q.pop();
 
-        // If the length of the current combination is less than 3 and
-        // the current character is not already present in the combination
-        if (top.length() < 3) {
-            for (int i = 0; i < n; i++) {
-                if (top.find(s[i]) == string::npos) {
-                    string child = top + s[i];
-                    total.push_back(child);
-                    q.push(child);
-                }
-            }
+        string top = current.top;
+        int start = current.start;
+
+        // If length is 3, store and continue
+        if (top.length() == 3) {
+            result.push_back(top);
+            continue;
+        }
+
+        for (int i = start; i < s.length(); i++) {
+            // Skip duplicates in the same level
+            if (i > start && s[i] == s[i - 1]) continue;
+
+            q.push(Move(top + s[i], i + 1)); // Correct way to create Move object
         }
     }
 
-    return total;
+    return result;
 }
 
 
@@ -71,12 +89,10 @@ private:
             return;
         }
         
-        for (int i = start; i < candidates.size() && candidates[i] <= target; ++i) {//candidates[i] <= target to avoid unnecessary combination
-            // Skip duplicates
-            if (i > start && candidates[i] == candidates[i - 1])// i>start means in our considered values we don't take same value twice as for a parent of size 2 it will create multiple duplicate of size 3
-                continue;
+        for (int i = start; i < candidates.size() ; ++i) {
+            if (i > start && candidates[i] == candidates[i - 1]) continue;
             current.push_back(candidates[i]);
-            dfs(candidates, target - candidates[i], i + 1, current, result); // Use the number only once
+            dfs(candidates, target - candidates[i], i + 1, current, result); 
             current.pop_back(); // Backtrack
         }
     }

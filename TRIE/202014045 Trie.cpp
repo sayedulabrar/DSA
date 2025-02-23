@@ -111,9 +111,12 @@ Node* search(Node* root, string key) {
     return (pCrawl);
 }
 
-void printLexicographic(Node* cur, string s) {
+void printLexicographic(Node* cur, string &s) {
+
     if (cur->count > 0) {
-        for (int i = 0; i < cur->count; i++) cout << s << endl;
+        for (int i = 0; i < cur->count; i++) {
+            cout << s << endl;
+        }
     }
 
     for (int i = 0; i < 28; i++) {
@@ -124,11 +127,15 @@ void printLexicographic(Node* cur, string s) {
         else if (i == 27) cc = '.';
 
         if (cur->children[i]) {
-            Node* next = cur->children[i];  // Use a temporary pointer for recursion
-            printLexicographic(next, s + cc);
+            s.push_back(cc);            
+            printLexicographic(cur->children[i], s);  
+            s.pop_back();               
         }
     }
 }
+
+
+
 
 int main() {
     int a, b, k;
@@ -199,8 +206,8 @@ GMAIL.COM
 
 WordDictionary() Initializes the object.
 void addWord(word) Adds word to the data structure, it can be matched later.
-bool search(word) Returns true if there is any string in the data structure that matches word or false otherwise. word may contain dots '.' where
-dots can be matched with any letter.
+bool search(word) Returns true if there is any string in the data structure that matches word or false otherwise. 
+word may contain dots '.' where dots can be matched with any letter.
 Input
 ["WordDictionary","addWord","addWord","addWord","search","search","search","search"]
 [[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]

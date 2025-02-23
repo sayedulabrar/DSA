@@ -109,13 +109,15 @@ Node* deleteNode(Node* root, int key) {
 
     if (key < root->key)
         root->left = deleteNode(root->left, key);
+        //return root;//But instead of adding each time we added at the end of if-else
     else if (key > root->key)
         root->right = deleteNode(root->right, key);
+        //return root;//But instead of adding each time we added at the end of if-else
     else {
         // Node with only one child or no child
         if (root->left == NULL) {
             Node* temp = root->right;
-            if (temp)
+            if (temp)//to avoid error of null->parent 
                 temp->parent = root->parent; // Update the parent pointer of the child
             free(root);
             return temp;
@@ -131,8 +133,9 @@ Node* deleteNode(Node* root, int key) {
         Node* temp = minValueNode(root->right);   
         root->key = temp->key;
         root->right = deleteNode(temp, temp->key);
+        //return root;//But instead of adding each time we added at the end of if-else
     }
-    return root;// in else block returned value paoar por upore nodes visit continue rakhte aita dorkar.
+    return root;//  this covers all the part where return needed and not been added
 }
  
     int height(Node *node){
@@ -209,47 +212,47 @@ public:
     }
 
 private:
-    void rightView(TreeNode* node, int depth, vector<int>& result) {
-        if (!node) return;
-        if (depth == result.size()) {
-            result.push_back(node->val);
-        }
-        if (node->right) {
-            rightView(node->right, depth + 1, result);
-        } 
-        if (node->left) {
-            rightView(node->left, depth + 1, result);
-        }
+int maxDepth = -1;
+
+void rightView(TreeNode* node, int depth, vector<int>& result) {
+    if (!node) return;
+
+    if (depth > maxDepth) {  // Ensures only the first node at a new depth is added
+        result.push_back(node->val);
+        maxDepth = depth;
     }
 
-    vector<int> rightView(TreeNode* root) {
-        vector<int> result;
-        if (!root) return result;
+    rightView(node->right, depth + 1, result);
+    rightView(node->left, depth + 1, result);
+}
 
-        queue<TreeNode*> q;
-        q.push(root);
+   vector<int> rightView(TreeNode *root) {
+    if (root == nullptr) return {}; // Handle the case where the root is null
+    
+    queue<TreeNode*> q;
+    vector<int> result;
+    q.push(root);
 
-        while (!q.empty()) {
-            int levelSize = q.size();
-            
-            // Traverse all nodes at the current level
-            for (int i = 0; i < levelSize; i++) {
-                TreeNode* node = q.front();
-                q.pop();
-                
-                // Capture the first element of each level for right view
-                if (i == levelSize - 1) {
-                    result.push_back(node->val);
-                }
-                
-                // Add child nodes to the queue
-                if (node->left) q.push(node->left);
-                if (node->right) q.push(node->right);
+    while (!q.empty()) {
+        int size = q.size();
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = q.front();
+            q.pop();
+            if (i == size - 1) { // This is the last node at this level (rightmost)
+                // This is the first node at this level
+                result.push_back(node->val);
+            }
+            if (node->right) {
+                q.push(node->right);
+            }
+            if (node->left) {
+                q.push(node->left);
             }
         }
-
-        return result;
     }
+
+    return result;
+}
 
 };
 
@@ -291,22 +294,19 @@ public:
         
         return numIslands;
     }
-
-    int dirs[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
     
     void dfs(vector<vector<char>>& grid, int i, int j) {
 
-        grid[i][j] = '0'; //dfs approch. Marking visited at the step when we will also take out it's children and shove it in stack of calls
-
-        for (auto dir : dirs) {
-            int x = i + dir[0];
-            int y = j + dir[1];
-
-            if (x >= 0 && y >= 0 && x < m && y < n && grid[x][y] == '1') {
-                
-                dfs(grid, x, y);
-            }
-        }
+        
+        if (i < 0 || j < 0 || i >= m || j >= n || grid[i][j] != '1') return;
+        
+        grid[i][j] = '0'; // Mark current cell as visited
+        
+        // Explore neighbors
+        dfs(grid, i + 1, j);
+        dfs(grid, i - 1, j);
+        dfs(grid, i, j + 1);
+        dfs(grid, i, j - 1);
     }
 };
 
@@ -395,6 +395,7 @@ Output: 1
 class Solution {
 public:
     int m,n;
+    //TODO: 
     int dirs[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     int longestIncreasingPath(vector<vector<int>>& matrix) {
@@ -402,6 +403,7 @@ public:
 
          m = matrix.size();
          n = matrix[0].size();
+       //TODO: 
         vector<vector<int>> memo(m, vector<int>(n, 0));
         int maxPath = 0;
 
@@ -424,12 +426,13 @@ public:
             int y = j + dir[1];
 
             if (x >= 0 && x < m && y >= 0 && y < n && matrix[x][y] > matrix[i][j]) {
+                //TODO:
                 currPath = max(currPath, 1 + dfs(matrix, x, y, memo));
             }
         }
 
-        memo[i][j] = currPath;
-        return currPath;
+        
+        return memo[i][j] = currPath;
     }
 };
 
@@ -457,7 +460,7 @@ public:
 
 
 
-find the path with target as pathsum. WE can only call a node end of the path if its both choldren null.So we did this way.
+find the path with target as pathsum.a root-to-leaf path. WE can only call a node end of the path if its both choldren null.So we did this way.
 class Solution {
 public:
 
@@ -483,7 +486,8 @@ return  hasPathSum2(root, targetSum);
 
 
 
-
+//TODO:You first store the left and right subtrees before modifying them.
+//Then, you correctly swap the left and right children after both subtrees are processed.
 class Solution {
 public:
     TreeNode* invertTree(TreeNode* root) {
@@ -497,28 +501,18 @@ public:
 
         return root;
     }
+
+    // void invertTree(TreeNode* root) {
+    //     if (!root) return; // Base case
+
+    //     // Recursively invert left and right subtrees
+    //     invertTree(root->left);
+    //     invertTree(root->right);
+
+    //     // Swap left and right children
+    //     swap(root->left, root->right);
+    // }
 };
-
-
-
-
-
-// class Solution {
-// public:
-//     void invertTree(TreeNode* root) {
-//         if (!root) return;
-
-//         // Recursively invert the left and right subtrees
-//         invertTree(root->left);
-//         invertTree(root->right);
-
-//         // Swap the left and right children
-//         TreeNode* temp = root->left;
-//         root->left = root->right;
-//         root->right = temp;
-//     }
-// };
-
 
 
 class Solution {
@@ -553,42 +547,42 @@ Expected
 [1,null,2,null,3,null,4,null,5,null,6]
 
 class Solution {
-public:
-    void flatten(TreeNode* root) {
-        // Base case: Empty tree
-        if (!root) {
-            return;
+    public:
+        void flatten(TreeNode* root) {
+            // Base case: Empty tree
+            if (!root) {//can't check !root->left&&!root->right because it's returning void. But if we do it we need to return root
+                return;
+            }
+    
+            // Handle the left subtree recursively
+            flatten(root->left);
+    
+            // Store the right subtree (important for in-place modification)
+            TreeNode* rightSubtree = root->right;
+    
+            // Set the right child to the flattened left subtree
+            root->right = root->left;
+    
+            // Null out the left child (essential for linked list structure)
+            root->left = nullptr;
+    
+            // Find the tail of the flattened left subtree.here root can be null so we took root not root->right
+            //TODO TreeNode* tail = root;
+            while (tail->right) {
+                tail = tail->right;
+            }
+    
+            // Append the stored right subtree and flatten it recursively
+            tail->right = rightSubtree;
+            flatten(rightSubtree);  // Flatten the right subtree
         }
-
-        // Handle the left subtree recursively
-        flatten(root->left);
-
-        // Store the right subtree (important for in-place modification)
-        TreeNode* rightSubtree = root->right;
-
-        // Set the right child to the flattened left subtree
-        root->right = root->left;
-
-        // Null out the left child (essential for linked list structure)
-        root->left = nullptr;
-        //see the example below
-        TreeNode* tail = root;  
-        while (tail->right) {
-            tail = tail->right;
-        }
-
-        // Append the stored right subtree and flatten it recursively
-        tail->right = rightSubtree;
-        flatten(root->right);  // here instead of 5 there can be a subtree and we need to flatten it
-    }
-};
-
-AT THE END LEFT THERE COULD BE RIGHT SUBTREE WITH HIGHER HEIGHT.So we flatten right subtree at the end.
+    };
+AT THE END LEFT THERE COULD BE RIGHT SUBTREE WITH HIGHER HEIGHT.So we latten right subtree at the end.
 
 i
     1                   
    / \
-  2   5         
+  2   5
  / \
 3   4
 
@@ -616,6 +610,15 @@ iii
 124. Binary Tree Maximum Path Sum.Path can be start and end at any connecting points.
 as connecting root ust be included.
 
+
+
+
+
+
+
+
+
+//TODO (+)L-(+)R-U-R+Max(L,R) LRURM
 class Solution {
 public:
     int path(int &maxi,TreeNode* root){
@@ -624,7 +627,8 @@ public:
         int l=max(path(maxi,root->left),0);
         int r=max(path(maxi,root->right),0);
         maxi=max(maxi,l+r+root->val);//keep a track of if current node,l,r is a complete path then is it maximum sum.
-        return root->val+max(l,r);  // we are taking only one of l,r because if we take both then that would be a complete path but the solution has only 1 complete path .  
+        return root->val+max(l,r);  // we are taking only one of l,r because if we take both then that would be a complete path 
+        // but the solution has only 1 complete path .  
     }
     int maxPathSum(TreeNode* root) {
         int maxi=INT_MIN;
@@ -632,6 +636,138 @@ public:
         return maxi;
     }
 };
+
+
+
+Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
+
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+
+ 
+
+Example 1:
+
+
+Input: board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
+Output: [["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+Explanation: Notice that an 'O' should not be flipped if:
+- It is on the border, or
+- It is adjacent to an 'O' that should not be flipped.
+The bottom 'O' is on the border, so it is not flipped.
+The other three 'O' form a surrounded region, so they are flipped.
+Example 2:
+
+Input: board = [["X"]]
+Output: [["X"]]
+
+class Solution {
+public:
+    void DFS(vector<vector<char>>& board, int i, int j, int m, int n) {
+        if(i<0 or j<0 or i>=m or j>=n or board[i][j] != 'O') return;
+        board[i][j] = '#';
+        DFS(board, i-1, j, m, n);
+        DFS(board, i+1, j, m, n);
+        DFS(board, i, j-1, m, n);
+        DFS(board, i, j+1, m, n);
+    }
+    
+    void solve(vector<vector<char>>& board) {
+      
+      //We will use boundary DFS to solve this problem
+        
+      // Let's analyze when an 'O' cannot be flipped,
+      // if it has atleast one 'O' in it's adjacent, AND ultimately this chain of adjacent 'O's is connected to some 'O' which lies on boundary of board
+        
+      //consider these two cases for clarity :
+      /*
+        O's won't be flipped          O's will be flipped
+        [X O X X X]                   [X X X X X]     
+        [X O O O X]                   [X O O O X]
+        [X O X X X]                   [X O X X X] 
+        [X X X X X]                   [X X X X X]
+      
+      So we can conclude if a chain of adjacent O's is connected some O on boundary then they cannot be flipped
+      
+      */
+        
+      //Steps to Solve :
+      //1. Move over the boundary of board, and find O's 
+      //2. Every time we find an O, perform DFS from it's position
+      //3. In DFS convert all 'O' to '#'      (why?? so that we can differentiate which 'O' can be flipped and which cannot be)   
+      //4. After all DFSs have been performed, board contains three elements,#,O and X
+      //5. 'O' are left over elements which are not connected to any boundary O, so flip them to 'X'
+      //6. '#' are elements which cannot be flipped to 'X', so flip them back to 'O'
+      //7. finally, Upvote the solution😊   
+        
+      
+     int m = board.size();
+        
+      if(m == 0) return;  
+        
+     int n = board[0].size();
+     
+     //Moving over firts and last column   
+     for(int i=0; i<m; i++) {
+         if(board[i][0] == 'O')
+             DFS(board, i, 0, m, n);
+         if(board[i][n-1] == 'O')
+             DFS(board, i, n-1, m, n);
+     }
+        
+        
+     //Moving over first and last row   
+     for(int j=0; j<n; j++) {
+         if(board[0][j] == 'O')
+             DFS(board, 0, j, m, n);
+         if(board[m-1][j] == 'O')
+             DFS(board, m-1, j, m, n);
+     }
+        
+     for(int i=0; i<m; i++)
+         for(int j=0; j<n; j++)
+         {
+             if(board[i][j] == 'O')
+                 board[i][j] = 'X';
+             if(board[i][j] == '#')
+                 board[i][j] = 'O';
+         }
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -646,7 +782,14 @@ In preorder there is root ,[root of left subtree,remaining of the left subtree],
 
 Inorder left subtree,root,right subtree.
 
-If we go serially in preorder we will get roots in the level order.And if we search that root index in inorder then we will be able to 
+It means if there are preorder 0 1 5 2 15 4 .Inorder 1 5 2 0 15 4 .(just for Example not perfect.)
+Here root 0 .left 1,5,2.right 15,4 .so index 1 to 3 of preorder is of left and 0 to 2 for inorder.And index 4 to 5 of preorder is of right 
+and 4 to 5 for inorder.
+                                     
+
+
+
+So if we go serially in preorder we will get roots in the level order.And if we search that root index in inorder then we will be able to 
 get the elements of left subtree and right subtree.
                     
 
@@ -683,9 +826,6 @@ TreeNode* buildTree(vector < int > & preorder, vector < int > & inorder) {
 };
 
 
-// preStart + 1 to preStart + leftSubtreeSize because the number of elements results in leftSubtreeSize. That's why range is like that.
-// postorderStart, postorderStart + leftSubtreeSize - 1  because the number of elements results in leftSubtreeSize too. ......
-
 
 
 
@@ -719,83 +859,3 @@ postorder : left ,right,root.So we have postorderStart, postorderStart + leftSub
 
 
 
-
-Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
-
-A region is captured by flipping all 'O's into 'X's in that surrounded region.
-
- 
-
-Example 1:
-
-
-Input: 
-board = [
-        ["X","X","X","X"],
-        ["X","O","O","X"],
-        ["X","X","O","X"],
-        ["X","O","X","X"]]
-
-Output: [
-        ["X","X","X","X"],
-        ["X","X","X","X"],
-        ["X","X","X","X"],
-        ["X","O","X","X"]]
-
-Explanation: Notice that an 'O' should not be flipped if:
-- It is on the border, or
-- It is adjacent to an 'O' that should not be flipped.
-The bottom 'O' is on the border, so it is not flipped.
-The other three 'O' form a surrounded region, so they are flipped.
-Example 2:
-
-Input: board = [["X"]]
-Output: [["X"]]
-
-class Solution {
-public:
-    void DFS(vector<vector<char>>& board, int i, int j, int m, int n) {
-        if(i<0 or j<0 or i>=m or j>=n or board[i][j] != 'O') return;
-        board[i][j] = '#';
-        DFS(board, i-1, j, m, n);
-        DFS(board, i+1, j, m, n);
-        DFS(board, i, j-1, m, n);
-        DFS(board, i, j+1, m, n);
-    }
-    
-    void solve(vector<vector<char>>& board) {
-      
-
-     int m = board.size();
-        
-      if(m == 0) return;  
-        
-     int n = board[0].size();
-     
-     //Moving over firts and last column   
-     for(int i=0; i<m; i++) {
-         if(board[i][0] == 'O')
-             DFS(board, i, 0, m, n);
-         if(board[i][n-1] == 'O')
-             DFS(board, i, n-1, m, n);
-     }
-        
-        
-     //Moving over first and last row   
-     for(int j=0; j<n; j++) {
-         if(board[0][j] == 'O')
-             DFS(board, 0, j, m, n);
-         if(board[m-1][j] == 'O')
-             DFS(board, m-1, j, m, n);
-     }
-        
-     for(int i=0; i<m; i++)
-         for(int j=0; j<n; j++)
-         {
-             if(board[i][j] == 'O')
-                 board[i][j] = 'X';
-             if(board[i][j] == '#')
-                 board[i][j] = 'O';
-         }
-    }
-};

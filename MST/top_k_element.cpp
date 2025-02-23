@@ -1,13 +1,8 @@
-******priority queue is a queue .So it pop from top******
-
-a.second > b.second : it ensures high frequency have higher priority and pop at last.
-
-a.second < b.second : it ensures smallest frequency higher priority and pop at last.
 
 
 class Solution {
 public:
-    // Custom comparator for the min-heap
+    // todo Custom comparator for the min-heap
     struct compare {
         bool operator()(const pair<int, int>& a, const pair<int, int>& b) {
             return a.second > b.second; // Compare frequencies
@@ -77,39 +72,71 @@ nums1 and nums2 both are sorted in non-decreasing order.
 k <= nums1.length * nums2.length
 
 
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+struct PairSum {
+    int sum;
+    int num1;
+    int num2;
+
+    PairSum(int s, int a, int b) : sum(s), num1(a), num2(b) {}
+};
+
+// todo Min heap comparator (smallest sum first)
+struct Compare {
+    bool operator()(const PairSum& a, const PairSum& b) {
+        return a.sum > b.sum; // Min heap (smallest sum at top)
+    }
+};
 
 class Solution {
 public:
     vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
-        // Max-heap to store the pairs with their sums, we want to keep the k smallest
-        priority_queue<pair<int, pair<int, int>>> maxHeap;
+        priority_queue<PairSum, vector<PairSum>, Compare> minHeap;
 
-        // Iterate over all combinations of nums1 and nums2
         for (int i = 0; i < nums1.size(); i++) {
             for (int j = 0; j < nums2.size(); j++) {
                 int sum = nums1[i] + nums2[j];
-                
-                // Push the current pair (sum, {i, j}) into the heap
-                maxHeap.push({sum, {i, j}});
-                
-                // If the heap size exceeds k, pop the largest sum pair
-                if (maxHeap.size() > k) {
-                    maxHeap.pop();
+
+                // Push to heap
+                minHeap.push(PairSum(sum, nums1[i], nums2[j]));
+
+                // Maintain heap size of k
+                if (minHeap.size() > k) {
+                    minHeap.pop();
                 }
             }
         }
 
-        // Collect the result from the heap
+        // Extract results
         vector<vector<int>> result;
-        while (!maxHeap.empty()) {
-            auto [sum, indices] = maxHeap.top();
-            maxHeap.pop();
-            result.push_back({nums1[indices.first], nums2[indices.second]});
+        while (!minHeap.empty()) {
+            PairSum top = minHeap.top();
+            result.push_back({top.num1, top.num2});
+            minHeap.pop();
         }
-
-        // Since the max-heap stores elements in reverse order, we reverse the result
-        reverse(result.begin(), result.end());
 
         return result;
     }
 };
+
+// Example usage
+int main() {
+    Solution sol;
+    vector<int> nums1 = {1, 7, 11};
+    vector<int> nums2 = {2, 4, 6};
+    int k = 3;
+
+    vector<vector<int>> result = sol.kSmallestPairs(nums1, nums2, k);
+
+    for (const auto& pair : result) {
+        cout << "[" << pair[0] << ", " << pair[1] << "] ";
+    }
+    cout << endl;
+
+    return 0;
+}

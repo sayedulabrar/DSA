@@ -114,7 +114,7 @@ public:
         int farthest = 0;
         int last_jump_end = 0;
         
-        for (int i = 0; i < n - 1; ++i) {
+         for (int i = 0; i < n - 1; ++i) {
             farthest = max(farthest, i + nums[i]);
             if (i == last_jump_end) {
                 jumps++;
@@ -148,9 +148,8 @@ public:
         int n = citations.size();
         sort(citations.begin(), citations.end(), greater<>());
         for(int i = 0; i < n; i++) {
-            int h = i + 1;
-            if(citations[i] <= h) continue;
-            else return h - 1;
+            if(citations[i] <= i+1) continue;
+            else return i;
         }
         return n;//return n at the end to handle the case where all papers have more citations than their index position
     }
@@ -296,52 +295,12 @@ public:
                 
                 if (numMap.find(complement) != numMap.end()) {
                     result.push_back({nums[i], complement, nums[j]});
-                    while (j + 1 < n && nums[j] == nums[j + 1]) ++j; // Skip duplicates as we don't want same triplet again.And here 
-                    // no problem as in next iteration j will increase by 1 if in range and that last of duplicates will be avoided .
+                    while (j + 1 < n && nums[j] == nums[j + 1]) ++j; // Skip duplicates using j+1 because we found at j and want to check if we want to allow next one.
+                    //it's not like 1st one because it's starting point but under it j must go forward .And it works as it only keep unique elements .so no fear of repeat
+                    //under each i
                 }
                 
                 numMap[nums[j]] = j; // we need it here else it's current element can end up be the 2nd and 3rd element too .
-            }
-        }
-        
-        return result;
-    }
-};
-//For real world scene this is better like map problems with various data types .
-
-
-
-class Solution {
-public:
-    vector<vector<int>> threeSum(vector<int>& nums) {
-        vector<vector<int>> result;
-        int n = nums.size();
-        sort(nums.begin(), nums.end()); // Sort the array
-        
-        for (int i = 0; i < n - 2; ++i) {
-            // Skip duplicates for the first element
-            if (i > 0 && nums[i] == nums[i - 1]) continue;
-            
-            int target = -nums[i];
-            int low = i + 1, high = n - 1;
-            
-            while (low < high) {
-                int sum = nums[low] + nums[high];
-                
-                if (sum == target) {
-                    result.push_back({nums[i], nums[low], nums[high]});
-                    
-                    // Skip duplicates for the second and third elements
-                    while (low < high && nums[low] == nums[low + 1]) ++low;
-                    while (low < high && nums[high] == nums[high - 1]) --high;
-                    
-                    ++low;
-                    --high;
-                } else if (sum < target) { //the nums can be -,+. So don't worry think normally.
-                    ++low; // Increase the sum
-                } else {
-                    --high; // Decrease the sum
-                }
             }
         }
         

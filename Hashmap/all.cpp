@@ -345,32 +345,23 @@ public:
 128.[100,4,200,1,3,2], the longest consecutive sequence is [1, 2, 3, 4], and its length is 4.
 
 
-
-
 int longestConsecutive(vector<int>& nums) {
-    map<int, bool> numMap;
-    for (int num : nums) {
-        numMap[num] = true;
-    }
+    if (nums.empty()) return 0; 
 
-    int longestStreak = 0;
-    int maxstreak=0;
-    int prev;
+    sort(nums.begin(), nums.end()); 
+    int longestStreak = 1; 
+    int maxStreak = 1;    
 
-    for (auto& [num, exists] : numMap) {
-      if(longestStreak==0){
-        longestStreak=1;
-      }else{
-        if(num-prev==1){
+    for (int i = 1; i < nums.size(); i++) {
+        // Skip duplicates
+        if (nums[i] == nums[i - 1]) continue;
+
+        if (nums[i] - nums[i - 1] == 1) {
             longestStreak++;
-        }else{
-            maxstreak=max(maxstreak,longestStreak);
-            longestStreak=1;
+            maxStreak = max(maxStreak, longestStreak); 
+        } else {
+            longestStreak = 1;
         }
-      }
-
-      prev=num;
     }
-
-    return longestStreak;
+    return maxStreak;
 }

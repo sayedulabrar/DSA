@@ -15,6 +15,30 @@ Example 3:
 
 Input: equations = [["a","b"]], values = [0.5], queries = [["a","b"],["b","a"],["a","c"],["x","y"]]
 Output: [0.50000,2.00000,-1.00000,-1.00000]
+
+
+Solution Steps:
+Graph Construction:
+
+1.Build a weighted graph where each equation a / b = value is represented as:
+    graph[a][b] = value
+    graph[b][a] = 1.0 / value
+2.Use an unordered_map of unordered_maps to store the graph.
+    Query Processing:
+
+    For each query (x / y), check:
+3.If either x or y is missing in the graph → return -1.0.
+4.If x == y → return 1.0.
+    DFS Search for Path:
+
+5.Perform DFS from x to y, multiplying edge values along the path.
+6.If a path exists, return the computed value.
+7.Use a visited set to avoid cycles.
+8.Store and Return Results:
+
+9.Store the result of each query in a vector.
+
+
 class Solution {
 public:
 

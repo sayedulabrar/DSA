@@ -1,3 +1,13 @@
+Given n jobs, where each job has a start time, an end time, and a profit, find the maximum profit you can earn by scheduling
+non-overlapping jobs.
+Problem Statement:
+You are given three arrays:
+startTime[i] (when a job starts)
+endTime[i] (when a job ends)
+profit[i] (profit from the job)
+Your task is to select non-overlapping jobs such that the total profit is maximized. You can choose a job only if no previously 
+selected job overlaps with it.
+
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
@@ -9,6 +19,8 @@ struct Job {
     int end;
     int profit;
 };
+
+//todo We are using DP approach and in DP approach we go incrementally based on the start. So we took start instead of end.
 
 bool compareJobs(const Job& a, const Job& b) {
     return a.start < b.start;
@@ -87,7 +99,6 @@ Explanation: The balloons can be burst by 2 arrows:
 
 
 [[9,12],[1,10],[4,11],[8,12],[3,9],[6,9],[6,7]]
-if we don't consider min end our answer will be wrong.Becase if we don't take minimum end we might face a case where we are shooting ans arrow and in the over lapping case  6-7 and 8-12 comes for 1-10 as we sorted based on first.Now we can't shoot these 2 with same arrow even though they overlap.So we are taking minimum end every time to avoid this scene.If we do it based on end we will take minimum end all the time and if an end > it assigns new arrow and it solves the issue.It's not same as activity selection.
 
 bool comp(const vector<int>& a, const vector<int>& b) {
     return a[1] < b[1];

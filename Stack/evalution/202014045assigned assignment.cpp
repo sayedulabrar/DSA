@@ -134,7 +134,7 @@ void sortstack(Stack st) {
         st.push(top);  // Push the maximum element back to the original stack
 
         // Restore the original order by transferring elements from the auxiliary stack to the original stack
-        for (int j = i + 1; j < n; j++) {
+        while(!temp.empty()) {
             int t = temp.top();  // Get the top element from the auxiliary stack
             temp.pop();  // Pop the top element from the auxiliary stack
             st.push(t);  // Push the element to the original stack
@@ -148,8 +148,8 @@ void sortstack(Stack st) {
 
 
 
-bool balance(const std::string& st) {
-    std::stack<char> ss;
+bool balance(const string& st) {
+    stack<char> ss;
 
     for (char ch : st) {
         switch (ch) {
@@ -313,17 +313,7 @@ Example 3:
 Input: s = "(1+(4+5+2)-3)+(6+8)"
 Output: 23
 
-insights:when there is lare number like 1225 here we need to take digit by digit and convert to number and put it together .That is why the first 
-while loop is.i-- because for loop will do i++ in the end.Sign to keep track of negative.We keep the in pair so a nuber and sign are together and 
-during pop it becoes easy to handle.When ( is encountered we push the sum that has been calculated and the latest sign for it and reset sum,sign 
-as the previous is already in stack.When ) is encountered that means the sum for () is calculated and we will pop and su it with it .We pop once 
-because before () there were only one sign and a number before.
-
-parts:
-1)handle large number
-2)handle sign
-3)handle '('
-4)handle ')'
+to handle the case of sign for both inside and outside bracket , whenever we are using the sign we are reinitializing it to 1;
 
 class Solution {
 public:
@@ -362,36 +352,60 @@ public:
     }
 };
 
-s consists of integers and operators '+', '-', '*', '/' separated by some number of spaces.no bracket.
-class Solution {
-public:
-    int calculate(string s) {
-        stack<pair<int, int>> st;
-        long long int ans = 0, curr = 0;
-        char sign = '+'; // To store the previously encountered sign
-        
-        for(int i = 0; i < s.size(); i++) {
-            if(isdigit(s[i])) {
-                curr = curr * 10 + (s[i] - '0'); // Keep forming the number until you encounter an operator
-            } else if(s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') {
-                if(sign == '*' || sign == '/') {//here sign is previous sign.
 
-                    pair<int, int> num = st.top(); st.pop();
-                    curr = (sign == '*' ? num.first * curr : num.first / curr);
-                    st.push({curr, num.second}); // Push the updated value with the same sign back to stack
-                } else {
-                    st.push({curr, (sign == '+' ? 1 : -1)}); // Push the current number and sign to stack
+
+Now handle full scene.
+
+class Solution {
+    public:
+        int calculate(string s) {
+            long long int sum = 0;
+            long long int num = 0;
+            char lastOperator = '+';
+            stack<pair<int, char>> st;
+    
+            for (int i = 0; i < s.size(); i++) {
+                if (isdigit(s[i])) {
+                    num = 0;
+                    while (i < s.size() && isdigit(s[i])) {
+                        num = num * 10 + (s[i] - '0');
+                        i++;
+                    }
+                    i--;
+    
+                    if (lastOperator == '+') {
+                        sum += num;
+                    } else if (lastOperator == '-') {
+                        sum -= num;
+                    } else if (lastOperator == '*') {
+                        sum *= num;
+                    } else if (lastOperator == '/') {
+                        sum /= num;
+                    }
+                } else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') {
+                    lastOperator = s[i];
+                } else if (s[i] == '(') {
+                    st.push({sum, lastOperator});
+                    sum = 0;
+                    lastOperator = '+';
+                } else if (s[i] == ')') {
+                    num = sum;
+                    sum = st.top().first;
+                    lastOperator = st.top().second;
+                    st.pop();
+    
+                    if (lastOperator == '+') {
+                        sum += num;
+                    } else if (lastOperator == '-') {
+                        sum -= num;
+                    } else if (lastOperator == '*') {
+                        sum *= num;
+                    } else if (lastOperator == '/') {
+                        sum /= num;
+                    }
                 }
-                curr = 0; 
-                sign = s[i]; 
             }
+    
+            return sum;
         }
-        
-        while(!st.empty()) {
-            pair<int, int> num = st.top(); st.pop();
-            ans += num.first * num.second; // Adjust the sign and accumulate the result
-        }
-            
-        return ans;    
-    }
-};
+    };
